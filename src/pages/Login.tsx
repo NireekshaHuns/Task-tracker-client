@@ -15,6 +15,7 @@ import {
   CardHeader, 
   CardTitle 
 } from '../components/ui/card';
+import { toast } from 'sonner';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -30,8 +31,16 @@ const Login = () => {
     mutationFn: authService.login,
     onSuccess: (data) => {
       login(data.token, data.user);
+      toast.success('Login successful', {
+        description: `Welcome back, ${data.user.name}!`
+      });
       navigate('/dashboard');
     },
+    onError: (error) => {
+      toast.error('Login failed', {
+        description: error instanceof Error ? error.message : 'Invalid credentials'
+      });
+    }
   });
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,18 +1,18 @@
 export type TaskStatus = "pending" | "approved" | "done" | "rejected";
 
 export interface Task {
-  id: string;
+  _id: string;
   title: string;
   description?: string;
   status: TaskStatus;
   createdAt: string;
   createdBy: {
-    id: string;
+    _id: string;
     name: string;
   };
   updatedAt?: string;
   updatedBy?: {
-    id: string;
+    _id: string;
     name: string;
   };
 }

@@ -1,10 +1,14 @@
+// src/App.tsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
 import { useAuthStore } from './store/authStore';
+import { Toaster } from 'sonner'; // Import from sonner
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
 import AuthRedirect from './components/authRedirect';
+
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -42,13 +46,15 @@ const App = () => {
             path="/dashboard" 
             element={
               <ProtectedRoute>
-                <h1>Dashboard</h1>
+                <Dashboard />
               </ProtectedRoute>
             } 
           />
           <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
+        {/* Sonner Toaster */}
+        <Toaster position="top-right" richColors closeButton />
       </BrowserRouter>
     </QueryClientProvider>
   );
