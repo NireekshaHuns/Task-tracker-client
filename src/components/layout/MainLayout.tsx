@@ -18,7 +18,7 @@ export const MainLayout = ({
   title,
   showBackButton = false,
   backButtonPath = "/dashboard",
-  backButtonText = "Back to Dashboard",
+  backButtonText = "",
 }: MainLayoutProps) => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();

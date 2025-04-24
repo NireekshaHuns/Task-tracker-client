@@ -102,6 +102,28 @@ const Dashboard = () => {
     },
   });
 
+  const reorderTaskMutation = useMutation({
+    mutationFn: ({
+      taskId,
+      beforeTaskId,
+    }: {
+      taskId: string;
+      beforeTaskId: string | null;
+    }) => taskService.reorderTask(taskId, beforeTaskId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      toast.success("Task reordered successfully");
+    },
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof TaskError ? error.message : "Failed to reorder task";
+
+      toast.error("Error", {
+        description: errorMessage,
+      });
+    },
+  });
+
   // Group tasks by status
   const pendingTasks = tasks.filter((task) => task.status === "pending");
   const approvedTasks = tasks.filter((task) => task.status === "approved");
