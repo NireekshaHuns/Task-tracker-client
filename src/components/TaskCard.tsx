@@ -1,3 +1,4 @@
+// src/components/TaskCard.tsx
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../store/authStore";
@@ -7,13 +8,7 @@ import { Button } from "./ui/button";
 import { Trash, Edit, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogFooter } from "./ui/dialog";
 
 interface TaskCardProps {
   task: Task;
@@ -21,10 +16,6 @@ interface TaskCardProps {
   className?: string;
 }
 
-/**
- * Card component to display individual task details and actions.
- * Supports editing, deleting, and drag-and-drop for approvers.
- */
 const TaskCard = ({
   task,
   onEdit,
@@ -36,7 +27,7 @@ const TaskCard = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Truncate title and description
+  // Truncate title and description for card view
   const maxTitleLength = 25;
   const maxDescriptionLength = 60;
 
@@ -120,12 +111,14 @@ const TaskCard = ({
     task.createdBy._id === user.id &&
     task.status === "pending";
 
+  // Handle card click to open dialog
   const handleCardClick = (e: React.MouseEvent) => {
     if (!isDragging) {
       setDialogOpen(true);
     }
   };
 
+  // Handle action button clicks
   const handleActionClick = (e: React.MouseEvent, action: () => void) => {
     e.stopPropagation();
     action();
@@ -194,44 +187,36 @@ const TaskCard = ({
         </div>
       </div>
 
-      {/* Dialog for full content */}
+      {/* Dialog popup for full task details */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{task.title}</DialogTitle>
-          </DialogHeader>
+          <div>
+            <h2 className="text-xl font-bold mb-2">{task.title}</h2>
 
-          {task.description && (
-            <div className="mt-4">
-              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                {task.description}
-              </p>
-            </div>
-          )}
+            <p className="text-gray-700 dark:text-gray-300 mb-6">
+              {task.description}
+            </p>
 
-          <div className="mt-4">
-            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-              <Clock className="h-4 w-4 mr-1" />
-              <span>
+            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <p className="flex items-center">
+                <Clock className="h-4 w-4 mr-1" />
                 Created{" "}
                 {formatDistanceToNow(new Date(task.createdAt), {
                   addSuffix: true,
                 })}
-              </span>
-            </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Status:{" "}
-              <span className="font-medium capitalize">{task.status}</span>
-            </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Created by: {task.createdBy.name}
+              </p>
+              <p>
+                Status: <span className="capitalize">{task.status}</span>
+              </p>
+              <p>Created by: {task.createdBy.name}</p>
             </div>
           </div>
 
-          <DialogFooter className="mt-6 space-x-2">
+          <DialogFooter className="flex space-x-2 mt-6">
             {canEdit && (
               <Button
                 variant="outline"
+                className="flex items-center"
                 onClick={() => {
                   onEdit?.(task);
                   setDialogOpen(false);
@@ -241,9 +226,11 @@ const TaskCard = ({
                 Edit
               </Button>
             )}
+
             {canDelete && (
               <Button
                 variant="destructive"
+                className="flex items-center"
                 onClick={() => deleteMutation.mutate()}
                 disabled={deleteMutation.isPending}
               >
@@ -251,9 +238,8 @@ const TaskCard = ({
                 Delete
               </Button>
             )}
-            <Button variant="default" onClick={() => setDialogOpen(false)}>
-              Close
-            </Button>
+
+            <Button onClick={() => setDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

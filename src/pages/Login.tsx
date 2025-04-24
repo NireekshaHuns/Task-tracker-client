@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { authService } from "../services/authService";
 import { useAuthStore } from "../store/authStore";
-import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -26,20 +25,15 @@ const Login = () => {
     password: "",
   });
 
-  // Handle login mutation
   const loginMutation = useMutation({
     mutationFn: authService.login,
     onSuccess: (data) => {
       login(data.token, data.user);
-      toast.success("Login successful", {
-        description: `Welcome back, ${data.user.name}!`,
-      });
       navigate("/dashboard");
     },
-    onError: (error) => {
-      toast.error("Login failed", {
-        description:
-          error instanceof Error ? error.message : "Invalid credentials",
+    onError: (error: any) => {
+      toast.error("Login Failed", {
+        description: error.message,
       });
     },
   });
@@ -65,15 +59,6 @@ const Login = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {loginMutation.isError && (
-              <Alert variant="destructive">
-                <AlertDescription>
-                  {(loginMutation.error as Error).message ||
-                    "Invalid credentials"}
-                </AlertDescription>
-              </Alert>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input

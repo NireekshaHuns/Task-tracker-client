@@ -1,10 +1,17 @@
 // src/layout/MainLayout.tsx
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { LogOut, Menu, Sun, Moon } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
-import { Button } from "../ui/button";
-import { ThemeToggle } from "../theme/ThemeToggle";
+import { Button } from "@/components/ui/button";
+import { useTheme } from "@/components/theme/ThemeProvider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -23,10 +30,15 @@ export const MainLayout = ({
 }: MainLayoutProps) => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
+  const { theme, setTheme } = useTheme();
 
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -63,17 +75,68 @@ export const MainLayout = ({
                 {title}
               </h1>
             </div>
+
             <div className="flex items-center space-x-4">
+              {/* User information */}
               <div className="text-sm text-gray-600 dark:text-gray-300">
                 <span className="font-medium">{user?.name}</span>
                 <span className="px-2">|</span>
                 <span className="capitalize">{user?.role}</span>
               </div>
-              <ThemeToggle />
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+
+              {/* Hamburger Menu Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="p-2" align="end">
+                  <DropdownMenuItem
+                    onClick={toggleTheme}
+                    className="cursor-pointer"
+                  >
+                    {theme === "dark" ? (
+                      <Sun className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Moon className="mr-2 h-4 w-4" />
+                    )}
+                    <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => navigate("/logs")}
+                    className="cursor-pointer"
+                  >
+                    <svg
+                      className="mr-2 h-4 w-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <path d="M14 2v6h6" />
+                      <path d="M16 13H8" />
+                      <path d="M16 17H8" />
+                      <path d="M10 9H8" />
+                    </svg>
+                    Activity Logs
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="cursor-pointer text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>

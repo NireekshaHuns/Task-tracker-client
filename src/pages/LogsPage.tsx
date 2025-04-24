@@ -186,7 +186,7 @@ const LogsPage = () => {
           variant="ghost"
           size="sm"
           onClick={() => refetch()}
-          className="transition-transform duration-300 hover:rotate-180"
+          className="transition-transform duration-300 hover:rotate-180 cursor-pointer"
         >
           <RefreshCw className="h-4 w-4" />
         </Button>

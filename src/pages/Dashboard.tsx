@@ -108,12 +108,6 @@ const Dashboard = () => {
     },
   });
 
-  // Group tasks by status
-  const pendingTasks = tasks.filter((task) => task.status === "pending");
-  const approvedTasks = tasks.filter((task) => task.status === "approved");
-  const doneTasks = tasks.filter((task) => task.status === "done");
-  const rejectedTasks = tasks.filter((task) => task.status === "rejected");
-
   // Handle drag and drop
   const handleDrop = (taskId: string, newStatus: TaskStatus) => {
     // Only approvers can change status (frontend check)
@@ -206,13 +200,8 @@ const Dashboard = () => {
               </SelectContent>
             </Select>
           </div>
-
-          <Button variant="ghost" size="sm" onClick={() => navigate("/logs")}>
-            View Activity Logs
-          </Button>
         </div>
 
-        {/* Only submitters can create tasks */}
         {user?.role === "submitter" && (
           <Button
             onClick={() => {
@@ -258,18 +247,6 @@ const Dashboard = () => {
             Loading tasks...
           </div>
         </div>
-      ) : tasks.length === 0 ? (
-        <div className="flex flex-col justify-center items-center h-64">
-          <div className="text-gray-500 dark:text-gray-400 mb-4">
-            No tasks found
-          </div>
-          {user?.role === "submitter" && (
-            <Button onClick={() => setIsFormOpen(true)} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Create your first task
-            </Button>
-          )}
-        </div>
       ) : (
         // Kanban board
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -277,7 +254,7 @@ const Dashboard = () => {
           <TaskColumn
             title="Pending"
             status="pending"
-            tasks={pendingTasks}
+            tasks={columnTasks.pending}
             onTaskEdit={handleEditTask}
             onDrop={handleDrop}
             onReorder={handleReorder}
@@ -287,7 +264,7 @@ const Dashboard = () => {
           <TaskColumn
             title="Approved"
             status="approved"
-            tasks={approvedTasks}
+            tasks={columnTasks.approved}
             onTaskEdit={handleEditTask}
             onDrop={handleDrop}
             onReorder={handleReorder}
@@ -297,7 +274,7 @@ const Dashboard = () => {
           <TaskColumn
             title="Done"
             status="done"
-            tasks={doneTasks}
+            tasks={columnTasks.done}
             onTaskEdit={handleEditTask}
             onDrop={handleDrop}
             onReorder={handleReorder}
@@ -307,7 +284,7 @@ const Dashboard = () => {
           <TaskColumn
             title="Rejected"
             status="rejected"
-            tasks={rejectedTasks}
+            tasks={columnTasks.rejected}
             onTaskEdit={handleEditTask}
             onDrop={handleDrop}
             onReorder={handleReorder}

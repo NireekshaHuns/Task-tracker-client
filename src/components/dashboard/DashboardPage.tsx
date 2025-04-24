@@ -141,10 +141,6 @@ const DashboardPage = () => {
               </SelectContent>
             </Select>
           </div>
-
-          <Button variant="ghost" size="sm" onClick={() => navigate("/logs")}>
-            View Activity Logs
-          </Button>
         </div>
 
         {/* Only submitters can create tasks */}
