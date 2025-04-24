@@ -1,6 +1,9 @@
+// src/store/authStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from '../types/user';
+import { decodeToken } from '@/components/utils/tokenUtils';
+
 
 interface AuthState {
   token: string | null;
@@ -20,7 +23,22 @@ export const useAuthStore = create<AuthState>()(
       logout: () => set({ token: null, user: null, isAuthenticated: false }),
     }),
     {
-      name: 'auth-storage',
+      name: 'auth-token', // Change from 'auth-storage' to 'auth-token'
+      partialize: (state) => ({ token: state.token }), // Only store token in localStorage
+      onRehydrateStorage: () => (state) => {
+        if (state && state.token) {
+          const user = decodeToken(state.token);
+          if (user) {
+            // Update the state with the decoded user info
+            state.user = user;
+            state.isAuthenticated = true;
+          } else {
+            // Token is invalid or expired, clear it
+            state.token = null;
+            state.isAuthenticated = false;
+          }
+        }
+      },
     }
   )
 );
