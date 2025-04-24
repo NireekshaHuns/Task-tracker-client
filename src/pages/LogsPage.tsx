@@ -1,6 +1,8 @@
+// src/pages/LogsPage.tsx
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { logService, LogFilters, Log } from "../services/logService";
+import { logService, LogFilters, Log, Submitter } from "../services/logService";
+import { useAuthStore } from "../store/authStore";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import {
@@ -73,6 +75,8 @@ const timeRangeOptions = [
 ];
 
 const LogsPage = () => {
+  const { user } = useAuthStore();
+
   // Filters state
   const [filters, setFilters] = useState<LogFilters>({
     limit: 50,
@@ -112,6 +116,14 @@ const LogsPage = () => {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["logs", filters],
     queryFn: () => logService.getLogs(filters),
+  });
+
+  // Fetch submitters for approver filter
+  const { data: submitters = [] } = useQuery({
+    queryKey: ["submitters"],
+    queryFn: () => logService.getSubmitters(),
+    // Only fetch if user is an approver
+    enabled: user?.role === "approver",
   });
 
   // Handle filter changes
@@ -196,7 +208,7 @@ const LogsPage = () => {
                 <SelectValue placeholder="All actions" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={undefined}>All actions</SelectItem>
+                <SelectItem value="all">All actions</SelectItem>
                 <SelectItem value="create">Create</SelectItem>
                 <SelectItem value="update">Update</SelectItem>
                 <SelectItem value="delete">Delete</SelectItem>
@@ -217,7 +229,7 @@ const LogsPage = () => {
                 <SelectValue placeholder="Any status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={undefined}>Any status</SelectItem>
+                <SelectItem value="all">Any status</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="approved">Approved</SelectItem>
                 <SelectItem value="done">Done</SelectItem>
@@ -238,7 +250,7 @@ const LogsPage = () => {
                 <SelectValue placeholder="Any status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={undefined}>Any status</SelectItem>
+                <SelectItem value="all">Any status</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="approved">Approved</SelectItem>
                 <SelectItem value="done">Done</SelectItem>
@@ -266,16 +278,32 @@ const LogsPage = () => {
             </Select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Task Title Contains
-            </label>
-            <Input
-              placeholder="Search by task title"
-              value={filters.taskTitle || ""}
-              onChange={(e) => handleFilterChange("taskTitle", e.target.value)}
-            />
-          </div>
+          {/* Submitter filter - only for approvers */}
+          {user?.role === "approver" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Filter by Submitter
+              </label>
+              <Select
+                value={filters.submitterId}
+                onValueChange={(value) =>
+                  handleFilterChange("submitterId", value)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All submitters" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All submitters</SelectItem>
+                  {submitters.map((submitter: Submitter) => (
+                    <SelectItem key={submitter._id} value={submitter._id}>
+                      {submitter.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -418,7 +446,7 @@ const LogsPage = () => {
           </div>
 
           {/* Pagination */}
-          {data && data.pagination.pages > 1 && (
+          {data && data.pagination && data.pagination.pages > 1 && (
             <div className="flex justify-between items-center mt-6">
               <div className="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">
                 Showing {(data.pagination.page - 1) * data.pagination.limit + 1}{" "}
