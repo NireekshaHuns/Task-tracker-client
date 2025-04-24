@@ -1,13 +1,18 @@
-// src/pages/LandingPage.tsx
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
+import usePageMeta from "@/hooks/usePageMeta";
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
+  usePageMeta({
+    title: "Welcome",
+    description:
+      "A simple, efficient task management application with role-based access control.",
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex flex-col">
-      {/* Navigation */}
       <nav className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">

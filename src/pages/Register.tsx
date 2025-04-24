@@ -22,9 +22,16 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Home } from "lucide-react";
+import usePageMeta from "@/hooks/usePageMeta";
 
 const Register = () => {
   const navigate = useNavigate();
+
+  usePageMeta({
+    title: "Register",
+    description:
+      "Create a new account to start using Task Tracker's powerful task management features.",
+  });
 
   const [formData, setFormData] = useState({
     name: "",
