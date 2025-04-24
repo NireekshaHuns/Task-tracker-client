@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import { ThemeProvider } from "./components/theme/ThemeProvider";
 import AuthRedirect from "./components/authRedirect";
 import LogsPage from "./pages/LogsPage";
+import LandingPage from "./pages/LandingPage";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -23,11 +24,19 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => {
+  const { isAuthenticated } = useAuthStore();
+
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
+            <Route
+              path="/"
+              element={
+                isAuthenticated ? <Navigate to="/dashboard" /> : <LandingPage />
+              }
+            />
             <Route
               path="/login"
               element={

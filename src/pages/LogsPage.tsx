@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { logService, LogFilters, Log, Submitter } from "../services/logService";
 import { useAuthStore } from "../store/authStore";
-import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import {
   Select,
@@ -122,13 +121,13 @@ const LogsPage = () => {
   const { data: submitters = [] } = useQuery({
     queryKey: ["submitters"],
     queryFn: () => logService.getSubmitters(),
-    // Only fetch if user is an approver
     enabled: user?.role === "approver",
   });
 
   // Handle filter changes
   const handleFilterChange = (key: keyof LogFilters, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value, page: 1 }));
+    const filterValue = value === "all" ? undefined : value;
+    setFilters((prev) => ({ ...prev, [key]: filterValue, page: 1 }));
   };
 
   // Clear filters
@@ -162,7 +161,7 @@ const LogsPage = () => {
       title="Activity Logs"
       showBackButton={true}
       backButtonPath="/dashboard"
-      backButtonText="Back to Dashboard"
+      backButtonText=""
     >
       {/* Controls */}
       <div className="flex justify-between items-center mb-6">
@@ -187,7 +186,7 @@ const LogsPage = () => {
           variant="ghost"
           size="sm"
           onClick={() => refetch()}
-          className="transition-transform duration-300 hover:rotate-180"
+          className="transition-transform duration-300 hover:rotate-180 cursor-pointer"
         >
           <RefreshCw className="h-4 w-4" />
         </Button>

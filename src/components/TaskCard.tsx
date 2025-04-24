@@ -1,3 +1,4 @@
+// src/components/TaskCard.tsx
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../store/authStore";
@@ -6,21 +7,39 @@ import { Task } from "../types/task";
 import { Button } from "./ui/button";
 import { Trash, Edit, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { toast } from "sonner"; // Import from sonner
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogFooter } from "./ui/dialog";
 
 interface TaskCardProps {
   task: Task;
   onEdit?: (task: Task) => void;
+  className?: string;
 }
 
-/**
- * Card component to display individual task details and actions.
- * Supports editing, deleting, and drag-and-drop for approvers.
- */
-const TaskCard = ({ task, onEdit }: TaskCardProps) => {
+const TaskCard = ({
+  task,
+  onEdit,
+  className = "",
+  ...props
+}: TaskCardProps & React.HTMLAttributes<HTMLDivElement>) => {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [isDragging, setIsDragging] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  // Truncate title and description for card view
+  const maxTitleLength = 25;
+  const maxDescriptionLength = 60;
+
+  const truncatedTitle =
+    task.title.length > maxTitleLength
+      ? `${task.title.substring(0, maxTitleLength)}...`
+      : task.title;
+
+  const truncatedDescription =
+    task.description && task.description.length > maxDescriptionLength
+      ? `${task.description.substring(0, maxDescriptionLength)}...`
+      : task.description;
 
   const getStatusColor = () => {
     switch (task.status) {
@@ -42,6 +61,7 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       toast.success("Task deleted successfully");
+      setDialogOpen(false);
     },
     onError: (error: unknown) => {
       const errorMessage =
@@ -55,6 +75,9 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
 
   // Handle drag events
   const handleDragStart = (e: React.DragEvent) => {
+    // Prevent dialog from opening when starting drag
+    e.stopPropagation();
+
     if (user?.role !== "approver") {
       e.preventDefault();
       toast.error("Permission Denied", {
@@ -62,8 +85,6 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
       });
       return;
     }
-
-    console.log("Starting drag for task ID:", task._id);
 
     e.dataTransfer.setData("taskId", task._id);
     e.dataTransfer.setData("taskStatus", task.status);
@@ -90,61 +111,139 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
     task.createdBy._id === user.id &&
     task.status === "pending";
 
+  // Handle card click to open dialog
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (!isDragging) {
+      setDialogOpen(true);
+    }
+  };
+
+  // Handle action button clicks
+  const handleActionClick = (e: React.MouseEvent, action: () => void) => {
+    e.stopPropagation();
+    action();
+  };
+
   return (
-    <div
-      className={`bg-white dark:bg-gray-800 p-4 rounded-md shadow mb-3 border-l-4 ${getStatusColor()}} 
-    transition-opacity duration-200
-    ${isDragging ? "opacity-50" : "opacity-100"}`}
-      draggable
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="font-medium text-gray-900 dark:text-white">
-          {task.title}
-        </h3>
+    <>
+      <div
+        className={`bg-white dark:bg-gray-800 p-4 rounded-md shadow mb-3 border-l-4 ${getStatusColor()} 
+          cursor-pointer transition-opacity duration-200
+          ${isDragging ? "opacity-50" : "opacity-100"} ${className}`}
+        draggable
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onClick={handleCardClick}
+        {...props}
+      >
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="font-medium text-gray-900 dark:text-white">
+            {truncatedTitle}
+          </h3>
 
-        <div className="flex space-x-1">
-          {canEdit && (
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8"
-              onClick={() => onEdit?.(task)}
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-          )}
-          {canDelete && (
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8 text-red-500 hover:text-red-700"
-              onClick={() => deleteMutation.mutate()}
-              disabled={deleteMutation.isPending}
-            >
-              <Trash className="h-4 w-4" />
-            </Button>
-          )}
+          <div className="flex space-x-1">
+            {canEdit && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8"
+                onClick={(e) => handleActionClick(e, () => onEdit?.(task))}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+            )}
+            {canDelete && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-red-500 hover:text-red-700"
+                onClick={(e) =>
+                  handleActionClick(e, () => deleteMutation.mutate())
+                }
+                disabled={deleteMutation.isPending}
+              >
+                <Trash className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {truncatedDescription && (
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
+            {truncatedDescription}
+          </p>
+        )}
+
+        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+          <div className="flex items-center">
+            <Clock className="h-3 w-3 mr-1" />
+            <span>
+              {formatDistanceToNow(new Date(task.createdAt), {
+                addSuffix: true,
+              })}
+            </span>
+          </div>
+          <div>By: {task.createdBy.name}</div>
         </div>
       </div>
 
-      {task.description && (
-        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
-          {task.description}
-        </p>
-      )}
+      {/* Dialog popup for full task details */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <div>
+            <h2 className="text-xl font-bold mb-2">{task.title}</h2>
 
-      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
-        <div className="flex items-center">
-          <Clock className="h-3 w-3 mr-1" />
-          <span>
-            {formatDistanceToNow(new Date(task.createdAt), { addSuffix: true })}
-          </span>
-        </div>
-        <div>By: {task.createdBy.name}</div>
-      </div>
-    </div>
+            <p className="text-gray-700 dark:text-gray-300 mb-6">
+              {task.description}
+            </p>
+
+            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <p className="flex items-center">
+                <Clock className="h-4 w-4 mr-1" />
+                Created{" "}
+                {formatDistanceToNow(new Date(task.createdAt), {
+                  addSuffix: true,
+                })}
+              </p>
+              <p>
+                Status: <span className="capitalize">{task.status}</span>
+              </p>
+              <p>Created by: {task.createdBy.name}</p>
+            </div>
+          </div>
+
+          <DialogFooter className="flex space-x-2 mt-6">
+            {canEdit && (
+              <Button
+                variant="outline"
+                className="flex items-center"
+                onClick={() => {
+                  onEdit?.(task);
+                  setDialogOpen(false);
+                }}
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
+            )}
+
+            {canDelete && (
+              <Button
+                variant="destructive"
+                className="flex items-center"
+                onClick={() => deleteMutation.mutate()}
+                disabled={deleteMutation.isPending}
+              >
+                <Trash className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            )}
+
+            <Button onClick={() => setDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
