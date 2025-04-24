@@ -12,9 +12,15 @@ export interface Log {
   action: 'create' | 'update' | 'delete' | 'status_change';
 }
 
+export interface Submitter {
+  _id: string;
+  name: string;
+}
+
 export interface LogFilters {
   taskId?: string;
   userId?: string;
+  submitterId?: string;
   action?: string;
   fromStatus?: string;
   toStatus?: string;
@@ -50,6 +56,17 @@ export const logService = {
       return response.data;
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Failed to fetch logs';
+      throw new Error(errorMessage);
+    }
+  },
+  
+  // New method to get submitters for the filter dropdown
+  getSubmitters: async (): Promise<Submitter[]> => {
+    try {
+      const response = await api.get<Submitter[]>('/logs/submitters');
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Failed to fetch submitters';
       throw new Error(errorMessage);
     }
   }
