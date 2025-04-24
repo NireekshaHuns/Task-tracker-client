@@ -7,7 +7,7 @@ import { Task } from '../types/task';
 import { Button } from './ui/button';
 import { Trash, Edit, Clock } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { useToast } from './ui/use-toast';
+import { toast } from 'sonner'; // Import from sonner
 
 interface TaskCardProps {
   task: Task;
@@ -18,7 +18,6 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [isDragging, setIsDragging] = useState(false);
-  const { toast } = useToast();
   
   // Get status-specific styling
   const getStatusColor = () => {
@@ -33,31 +32,37 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
   
   // Delete task mutation
   const deleteMutation = useMutation({
-    mutationFn: () => taskService.deleteTask(task.id),
+    mutationFn: () => taskService.deleteTask(task._id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      toast({
-        title: 'Task deleted',
-        description: 'Task was successfully deleted',
-        variant: 'default',
-      });
+      toast.success('Task deleted successfully');
     },
     onError: (error: unknown) => {
       const errorMessage = error instanceof TaskError 
         ? error.message 
         : 'Failed to delete task';
       
-      toast({
-        title: 'Error',
-        description: errorMessage,
-        variant: 'destructive',
+      toast.error('Error', {
+        description: errorMessage
       });
     }
   });
   
   // Handle drag events
   const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('taskId', task.id);
+    // If submitter tries to drag a card, stop them with a message
+    if (user?.role !== 'approver') {
+      e.preventDefault();
+      toast.error('Permission Denied', {
+        description: 'Only approvers can change task status'
+      });
+      return;
+    }
+    
+    console.log('Starting drag for task ID:', task._id); // Debug log
+    
+    e.dataTransfer.setData('taskId', task._id);
+    e.dataTransfer.setData('taskStatus', task.status);
     e.dataTransfer.effectAllowed = 'move';
     
     // Add a slight delay to trigger the dragging visual effect
@@ -72,12 +77,12 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
   
   // Check if user can edit this task
   const canEdit = user?.role === 'submitter' && 
-    task.createdBy.id === user.id && 
+    task.createdBy._id === user.id && 
     task.status === 'pending';
   
   // Check if user can delete this task
   const canDelete = user?.role === 'submitter' && 
-    task.createdBy.id === user.id && 
+    task.createdBy._id === user.id && 
     task.status === 'pending';
   
   return (

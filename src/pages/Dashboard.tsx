@@ -1,6 +1,7 @@
+// src/pages/Dashboard.tsx
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { taskService } from '../services/taskService';
+import { taskService, TaskError } from '../services/taskService';
 import { useAuthStore } from '../store/authStore';
 import { Task, TaskStatus, CreateTaskData } from '../types/task';
 import TaskColumn from '../components/TaskColumn';
@@ -15,6 +16,16 @@ import {
   SelectValue 
 } from '../components/ui/select';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner'; // Import from sonner
+
+// Simple inline LoadingSpinner component
+const LoadingSpinner = () => {
+  return (
+    <div className="flex justify-center items-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  );
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -26,12 +37,13 @@ const Dashboard = () => {
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
   
   // Fetch tasks with optional status filter
-  const { data: tasks = [], isLoading } = useQuery({
+  const { data: tasks = [], isLoading, isError, error } = useQuery({
     queryKey: ['tasks', statusFilter],
     queryFn: () => 
       statusFilter === 'all' 
         ? taskService.getTasks() 
         : taskService.getTasks(statusFilter),
+    retry: 1,
   });
   
   // Create task mutation
@@ -40,6 +52,27 @@ const Dashboard = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       setIsFormOpen(false);
+      
+      // Use Sonner toast
+      toast.success('Task created successfully', {
+        description: 'Your task has been added to the pending column'
+      });
+    },
+    onError: (error: unknown) => {
+      const errorMessage = error instanceof TaskError 
+        ? error.message 
+        : 'Failed to create task';
+      
+      toast.error('Error', {
+        description: errorMessage
+      });
+      
+      // Also show toast for rate-limit errors
+      if (errorMessage.includes('Too many task creation attempts')) {
+        toast.error('Rate Limit Exceeded', {
+          description: errorMessage
+        });
+      }
     },
   });
   
@@ -50,6 +83,18 @@ const Dashboard = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       setEditingTask(undefined);
+      
+      // Use Sonner toast
+      toast.success('Task updated successfully');
+    },
+    onError: (error: unknown) => {
+      const errorMessage = error instanceof TaskError 
+        ? error.message 
+        : 'Failed to update task';
+      
+      toast.error('Error', {
+        description: errorMessage
+      });
     },
   });
   
@@ -61,22 +106,21 @@ const Dashboard = () => {
   
   // Handle drag and drop
   const handleDrop = (taskId: string, newStatus: TaskStatus) => {
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
-    
-    // Only approvers can change status
-    if (user?.role !== 'approver') return;
-    
-    // Validate status transitions
-    if (
-      (task.status === 'pending' && ['approved', 'rejected'].includes(newStatus)) ||
-      (task.status === 'approved' && newStatus === 'done')
-    ) {
-      updateTaskMutation.mutate({ 
-        id: taskId, 
-        data: { status: newStatus } 
+    // Only approvers can change status (frontend check)
+    if (user?.role !== 'approver') {
+      toast.error('Permission Denied', {
+        description: 'Only approvers can change task status'
       });
+      return;
     }
+    
+    console.log(`Attempting to update task ${taskId} to status: ${newStatus}`);
+    
+    // Call the API to update the task status
+    updateTaskMutation.mutate({ 
+      id: taskId, 
+      data: { status: newStatus } 
+    });
   };
   
   // Handle task edit
@@ -88,7 +132,7 @@ const Dashboard = () => {
   const handleTaskSubmit = (data: CreateTaskData) => {
     if (editingTask) {
       updateTaskMutation.mutate({ 
-        id: editingTask.id, 
+        id: editingTask._id, 
         data 
       });
     } else {
@@ -96,14 +140,10 @@ const Dashboard = () => {
     }
   };
   
-  // Handle task drag start
-  const handleDragStart = (e: React.DragEvent, taskId: string) => {
-    e.dataTransfer.setData('taskId', taskId);
-  };
-  
   // Handle logout
   const handleLogout = () => {
     logout();
+    toast.info('Logged out successfully');
     navigate('/login');
   };
   
@@ -162,7 +202,9 @@ const Dashboard = () => {
           {/* Only submitters can create tasks */}
           {user?.role === 'submitter' && (
             <Button 
-              onClick={() => setIsFormOpen(true)}
+              onClick={() => {
+                setIsFormOpen(true);
+              }}
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Task
@@ -170,10 +212,46 @@ const Dashboard = () => {
           )}
         </div>
         
+        {/* Error state */}
+        {isError && (
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+            <div className="flex">
+              <div>
+                <p className="text-red-700">
+                  Error loading tasks: {error instanceof TaskError ? error.message : 'Unknown error'}
+                </p>
+                <p className="text-red-700 mt-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => queryClient.invalidateQueries({ queryKey: ['tasks'] })}
+                  >
+                    Retry
+                  </Button>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {/* Loading state */}
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="text-gray-500">Loading tasks...</div>
+            <LoadingSpinner />
+            <div className="ml-3 text-gray-500">Loading tasks...</div>
+          </div>
+        ) : tasks.length === 0 ? (
+          <div className="flex flex-col justify-center items-center h-64">
+            <div className="text-gray-500 mb-4">No tasks found</div>
+            {user?.role === 'submitter' && (
+              <Button 
+                onClick={() => setIsFormOpen(true)}
+                size="sm"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create your first task
+              </Button>
+            )}
           </div>
         ) : (
           // Kanban board
