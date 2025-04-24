@@ -1,8 +1,7 @@
-import { useState } from "react";
-import { Task, TaskStatus } from "../types/task";
+import { Task, TaskStatus } from "@/types/task";
 import TaskCard from "./TaskCard";
-import { useAuthStore } from "../store/authStore";
-import { toast } from "sonner";
+import { useAuthStore } from "@/store/authStore";
+import { useDragAndDrop } from "@/hooks/useDragAndDrop";
 
 interface TaskColumnProps {
   title: string;
@@ -10,6 +9,11 @@ interface TaskColumnProps {
   tasks: Task[];
   onTaskEdit: (task: Task) => void;
   onDrop: (taskId: string, status: TaskStatus) => void;
+  onReorder: (
+    draggedTaskId: string,
+    targetTaskId: string,
+    status: TaskStatus
+  ) => void;
 }
 
 const TaskColumn = ({
@@ -18,55 +22,17 @@ const TaskColumn = ({
   tasks,
   onTaskEdit,
   onDrop,
+  onReorder,
 }: TaskColumnProps) => {
   const { user } = useAuthStore();
-  const [isDropTarget, setIsDropTarget] = useState(false);
 
-  // Handle drag events
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-
-    if (!isDropTarget) {
-      setIsDropTarget(true);
-    }
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX;
-    const y = e.clientY;
-
-    if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
-      setIsDropTarget(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDropTarget(false);
-
-    // Get the task ID from the data transfer
-    const taskId = e.dataTransfer.getData("taskId");
-    console.log("Dropping task with ID:", taskId);
-
-    // Validate that we have a task ID
-    if (!taskId) {
-      toast.error("Error", {
-        description: "Invalid task ID",
-      });
-      return;
-    }
-
-    // If user is not an approver, show error
-    if (user?.role !== "approver") {
-      toast.error("Permission Denied", {
-        description: "Only approvers can change task status",
-      });
-      return;
-    }
-
-    onDrop(taskId, status);
-  };
+  const {
+    draggedOverTaskId,
+    isColumnDropTarget,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+  } = useDragAndDrop(onDrop, onReorder, status);
 
   // Define column styling based on status
   const getColumnStyle = () => {
@@ -84,20 +50,19 @@ const TaskColumn = ({
     }
   };
 
-  // Is the user an approver who can drag to this column
-  const isApprover = user?.role === "approver";
+  const canAcceptDrops = user?.role === "approver" || status === "pending";
 
   return (
     <div
       className={`flex-1 min-w-[250px] ${getColumnStyle()} rounded-md p-3
-            ${
-              isDropTarget && isApprover
-                ? "ring-2 ring-blue-400 dark:ring-blue-500 bg-opacity-70"
-                : ""
-            }`}
-      onDragOver={isApprover ? handleDragOver : undefined}
-      onDragLeave={isApprover ? handleDragLeave : undefined}
-      onDrop={isApprover ? handleDrop : undefined}
+        ${
+          isColumnDropTarget
+            ? "ring-2 ring-blue-400 dark:ring-blue-500 bg-opacity-70"
+            : ""
+        }`}
+      onDragOver={canAcceptDrops ? handleDragOver : undefined}
+      onDragLeave={canAcceptDrops ? handleDragLeave : undefined}
+      onDrop={canAcceptDrops ? handleDrop : undefined}
       data-status={status}
     >
       <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-3 capitalize">
@@ -105,7 +70,7 @@ const TaskColumn = ({
       </h2>
       <div
         className={`space-y-3 min-h-[200px] ${
-          isDropTarget && isApprover
+          isColumnDropTarget
             ? "bg-blue-50 dark:bg-blue-900/20 bg-opacity-50 rounded p-2 transition-all"
             : ""
         }`}
@@ -116,7 +81,21 @@ const TaskColumn = ({
           </div>
         )}
         {tasks.map((task) => (
-          <TaskCard key={task._id} task={task} onEdit={onTaskEdit} />
+          <div
+            key={task._id}
+            className={`relative ${
+              draggedOverTaskId === task._id
+                ? "before:absolute before:left-0 before:right-0 before:top-0 before:h-1 before:bg-blue-500 before:rounded"
+                : ""
+            }`}
+          >
+            <TaskCard
+              task={task}
+              onEdit={onTaskEdit}
+              className="task-card"
+              data-task-id={task._id}
+            />
+          </div>
         ))}
       </div>
     </div>

@@ -18,18 +18,25 @@ import {
 interface TaskCardProps {
   task: Task;
   onEdit?: (task: Task) => void;
+  className?: string;
 }
 
 /**
  * Card component to display individual task details and actions.
  * Supports editing, deleting, and drag-and-drop for approvers.
  */
-const TaskCard = ({ task, onEdit }: TaskCardProps) => {
+const TaskCard = ({
+  task,
+  onEdit,
+  className = "",
+  ...props
+}: TaskCardProps & React.HTMLAttributes<HTMLDivElement>) => {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [isDragging, setIsDragging] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  // Truncate title and description
   const maxTitleLength = 25;
   const maxDescriptionLength = 60;
 
@@ -77,6 +84,9 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
 
   // Handle drag events
   const handleDragStart = (e: React.DragEvent) => {
+    // Prevent dialog from opening when starting drag
+    e.stopPropagation();
+
     if (user?.role !== "approver") {
       e.preventDefault();
       toast.error("Permission Denied", {
@@ -84,8 +94,6 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
       });
       return;
     }
-
-    console.log("Starting drag for task ID:", task._id);
 
     e.dataTransfer.setData("taskId", task._id);
     e.dataTransfer.setData("taskStatus", task.status);
@@ -112,8 +120,7 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
     task.createdBy._id === user.id &&
     task.status === "pending";
 
-  const handleCardClick = () => {
-    // Only open dialog if not dragging
+  const handleCardClick = (e: React.MouseEvent) => {
     if (!isDragging) {
       setDialogOpen(true);
     }
@@ -129,11 +136,12 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
       <div
         className={`bg-white dark:bg-gray-800 p-4 rounded-md shadow mb-3 border-l-4 ${getStatusColor()} 
           cursor-pointer transition-opacity duration-200
-          ${isDragging ? "opacity-50" : "opacity-100"}`}
+          ${isDragging ? "opacity-50" : "opacity-100"} ${className}`}
         draggable
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onClick={handleCardClick}
+        {...props}
       >
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-medium text-gray-900 dark:text-white">
@@ -220,7 +228,7 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
             </div>
           </div>
 
-          <DialogFooter className="mt-6">
+          <DialogFooter className="mt-6 space-x-2">
             {canEdit && (
               <Button
                 variant="outline"
@@ -243,6 +251,9 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
                 Delete
               </Button>
             )}
+            <Button variant="default" onClick={() => setDialogOpen(false)}>
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

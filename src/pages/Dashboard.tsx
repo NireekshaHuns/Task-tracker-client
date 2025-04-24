@@ -1,5 +1,5 @@
 // src/pages/Dashboard.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { taskService, TaskError } from "../services/taskService";
@@ -36,6 +36,12 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
+  const [columnTasks, setColumnTasks] = useState({
+    pending: [] as Task[],
+    approved: [] as Task[],
+    done: [] as Task[],
+    rejected: [] as Task[],
+  });
 
   // Fetch tasks with optional status filter
   const {
@@ -102,28 +108,6 @@ const Dashboard = () => {
     },
   });
 
-  const reorderTaskMutation = useMutation({
-    mutationFn: ({
-      taskId,
-      beforeTaskId,
-    }: {
-      taskId: string;
-      beforeTaskId: string | null;
-    }) => taskService.reorderTask(taskId, beforeTaskId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast.success("Task reordered successfully");
-    },
-    onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof TaskError ? error.message : "Failed to reorder task";
-
-      toast.error("Error", {
-        description: errorMessage,
-      });
-    },
-  });
-
   // Group tasks by status
   const pendingTasks = tasks.filter((task) => task.status === "pending");
   const approvedTasks = tasks.filter((task) => task.status === "approved");
@@ -165,6 +149,38 @@ const Dashboard = () => {
       createTaskMutation.mutate(data);
     }
   };
+
+  const handleReorder = (
+    taskId: string,
+    status: TaskStatus,
+    targetIndex: number
+  ) => {
+    const currentTasks = [...columnTasks[status]];
+
+    const taskIndex = currentTasks.findIndex((t) => t._id === taskId);
+    if (taskIndex === -1) return;
+
+    const [movedTask] = currentTasks.splice(taskIndex, 1);
+
+    currentTasks.splice(targetIndex, 0, movedTask);
+
+    setColumnTasks({
+      ...columnTasks,
+      [status]: currentTasks,
+    });
+  };
+
+  useEffect(() => {
+    if (tasks.length > 0) {
+      // Group tasks by status
+      setColumnTasks({
+        pending: tasks.filter((task) => task.status === "pending"),
+        approved: tasks.filter((task) => task.status === "approved"),
+        done: tasks.filter((task) => task.status === "done"),
+        rejected: tasks.filter((task) => task.status === "rejected"),
+      });
+    }
+  }, [tasks]);
 
   return (
     <MainLayout title="Task Tracker">
@@ -264,6 +280,7 @@ const Dashboard = () => {
             tasks={pendingTasks}
             onTaskEdit={handleEditTask}
             onDrop={handleDrop}
+            onReorder={handleReorder}
           />
 
           {/* Approved column */}
@@ -273,6 +290,7 @@ const Dashboard = () => {
             tasks={approvedTasks}
             onTaskEdit={handleEditTask}
             onDrop={handleDrop}
+            onReorder={handleReorder}
           />
 
           {/* Done column */}
@@ -282,6 +300,7 @@ const Dashboard = () => {
             tasks={doneTasks}
             onTaskEdit={handleEditTask}
             onDrop={handleDrop}
+            onReorder={handleReorder}
           />
 
           {/* Rejected column */}
@@ -291,6 +310,7 @@ const Dashboard = () => {
             tasks={rejectedTasks}
             onTaskEdit={handleEditTask}
             onDrop={handleDrop}
+            onReorder={handleReorder}
           />
         </div>
       )}
