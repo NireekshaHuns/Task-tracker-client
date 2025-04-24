@@ -1,10 +1,16 @@
 // src/layout/MainLayout.tsx
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Menu, Sun, Moon } from "lucide-react";
+import { LogOut, Menu, Sun, Moon, CheckCircle } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,6 +54,13 @@ export const MainLayout = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
+              <div className="flex items-center mr-4">
+                <img
+                  src="/src/assets/logo.png"
+                  alt="Task Tracker Logo"
+                  className="h-8 w-auto"
+                />
+              </div>
               {showBackButton && (
                 <Button
                   variant="ghost"
@@ -78,10 +91,27 @@ export const MainLayout = ({
 
             <div className="flex items-center space-x-4">
               {/* User information */}
-              <div className="text-sm text-gray-600 dark:text-gray-300">
+              <div className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
                 <span className="font-medium">{user?.name}</span>
-                <span className="px-2">|</span>
-                <span className="capitalize">{user?.role}</span>
+                {user?.role === "approver" ? (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex items-center ml-2">
+                          <CheckCircle className="h-4 w-4 text-blue-500" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Approver</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : (
+                  <>
+                    <span className="px-2">|</span>
+                    <span className="capitalize">{user?.role}</span>
+                  </>
+                )}
               </div>
 
               {/* Hamburger Menu Dropdown */}
