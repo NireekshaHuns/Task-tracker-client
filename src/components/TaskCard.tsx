@@ -1,4 +1,3 @@
-// src/components/TaskCard.tsx
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../store/authStore";
@@ -14,12 +13,15 @@ interface TaskCardProps {
   onEdit?: (task: Task) => void;
 }
 
+/**
+ * Card component to display individual task details and actions.
+ * Supports editing, deleting, and drag-and-drop for approvers.
+ */
 const TaskCard = ({ task, onEdit }: TaskCardProps) => {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [isDragging, setIsDragging] = useState(false);
 
-  // Get status-specific styling
   const getStatusColor = () => {
     switch (task.status) {
       case "pending":
@@ -35,7 +37,6 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
     }
   };
 
-  // Delete task mutation
   const deleteMutation = useMutation({
     mutationFn: () => taskService.deleteTask(task._id),
     onSuccess: () => {
@@ -54,7 +55,6 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
 
   // Handle drag events
   const handleDragStart = (e: React.DragEvent) => {
-    // If submitter tries to drag a card, stop them with a message
     if (user?.role !== "approver") {
       e.preventDefault();
       toast.error("Permission Denied", {
@@ -63,13 +63,12 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
       return;
     }
 
-    console.log("Starting drag for task ID:", task._id); // Debug log
+    console.log("Starting drag for task ID:", task._id);
 
     e.dataTransfer.setData("taskId", task._id);
     e.dataTransfer.setData("taskStatus", task.status);
     e.dataTransfer.effectAllowed = "move";
 
-    // Add a slight delay to trigger the dragging visual effect
     setTimeout(() => {
       setIsDragging(true);
     }, 0);
@@ -105,7 +104,6 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
           {task.title}
         </h3>
 
-        {/* Task actions */}
         <div className="flex space-x-1">
           {canEdit && (
             <Button
@@ -131,14 +129,12 @@ const TaskCard = ({ task, onEdit }: TaskCardProps) => {
         </div>
       </div>
 
-      {/* Task description */}
       {task.description && (
         <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
           {task.description}
         </p>
       )}
 
-      {/* Task metadata */}
       <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
         <div className="flex items-center">
           <Clock className="h-3 w-3 mr-1" />

@@ -1,4 +1,3 @@
-// src/components/layout/MainLayout.tsx
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
@@ -24,7 +23,6 @@ export const MainLayout = ({
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
 
-  // Handle logout
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -32,7 +30,6 @@ export const MainLayout = ({
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-      {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">

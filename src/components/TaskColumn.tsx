@@ -1,4 +1,3 @@
-// src/components/TaskColumn.tsx
 import { useState } from "react";
 import { Task, TaskStatus } from "../types/task";
 import TaskCard from "./TaskCard";
@@ -25,7 +24,6 @@ const TaskColumn = ({
 
   // Handle drag events
   const handleDragOver = (e: React.DragEvent) => {
-    // Always prevent default to allow dropping
     e.preventDefault();
 
     if (!isDropTarget) {
@@ -34,7 +32,6 @@ const TaskColumn = ({
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
-    // Check if the drag is leaving the container and not entering a child
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX;
     const y = e.clientY;
@@ -50,7 +47,7 @@ const TaskColumn = ({
 
     // Get the task ID from the data transfer
     const taskId = e.dataTransfer.getData("taskId");
-    console.log("Dropping task with ID:", taskId); // Debug log
+    console.log("Dropping task with ID:", taskId);
 
     // Validate that we have a task ID
     if (!taskId) {
@@ -68,7 +65,6 @@ const TaskColumn = ({
       return;
     }
 
-    // Let the backend handle the validation logic
     onDrop(taskId, status);
   };
 

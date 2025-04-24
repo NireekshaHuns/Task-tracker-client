@@ -1,7 +1,10 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
+/**
+ * Reusable input component
+ */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input
@@ -15,7 +18,7 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Input }
+export { Input };
