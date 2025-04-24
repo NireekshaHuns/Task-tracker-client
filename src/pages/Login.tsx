@@ -1,61 +1,62 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
-import { authService } from '../services/authService';
-import { useAuthStore } from '../store/authStore';
-import { Alert, AlertDescription } from '../components/ui/alert';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '../components/ui/card';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { authService } from "../services/authService";
+import { useAuthStore } from "../store/authStore";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore();
-  
+
   const [formData, setFormData] = useState({
-    username: '',
-    password: '',
+    username: "",
+    password: "",
   });
-  
+
   // Handle login mutation
   const loginMutation = useMutation({
     mutationFn: authService.login,
     onSuccess: (data) => {
       login(data.token, data.user);
-      toast.success('Login successful', {
-        description: `Welcome back, ${data.user.name}!`
+      toast.success("Login successful", {
+        description: `Welcome back, ${data.user.name}!`,
       });
-      navigate('/dashboard');
+      navigate("/dashboard");
     },
     onError: (error) => {
-      toast.error('Login failed', {
-        description: error instanceof Error ? error.message : 'Invalid credentials'
+      toast.error("Login failed", {
+        description:
+          error instanceof Error ? error.message : "Invalid credentials",
       });
-    }
+    },
   });
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     loginMutation.mutate(formData);
   };
-  
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card className="w-full max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+      <Card className="w-full max-w-md dark:bg-gray-800 dark:text-gray-100">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
@@ -67,11 +68,12 @@ const Login = () => {
             {loginMutation.isError && (
               <Alert variant="destructive">
                 <AlertDescription>
-                  {(loginMutation.error as Error).message || 'Invalid credentials'}
+                  {(loginMutation.error as Error).message ||
+                    "Invalid credentials"}
                 </AlertDescription>
               </Alert>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input
@@ -83,7 +85,7 @@ const Login = () => {
                 onChange={handleChange}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -95,18 +97,18 @@ const Login = () => {
                 onChange={handleChange}
               />
             </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full" 
+
+            <Button
+              type="submit"
+              className="w-full"
               disabled={loginMutation.isPending}
             >
-              {loginMutation.isPending ? 'Logging in...' : 'Login'}
+              {loginMutation.isPending ? "Logging in..." : "Login"}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button variant="ghost" onClick={() => navigate('/register')}>
+          <Button variant="ghost" onClick={() => navigate("/register")}>
             Create an account
           </Button>
         </CardFooter>
