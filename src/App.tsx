@@ -5,6 +5,7 @@ import { useAuthStore } from './store/authStore';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AuthRedirect from './components/authRedirect';
+import Dashboard from './pages/Dashboard';
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -42,7 +43,7 @@ const App = () => {
             path="/dashboard" 
             element={
               <ProtectedRoute>
-                <h1>Dashboard</h1>
+                <Dashboard/>
               </ProtectedRoute>
             } 
           />
