@@ -14,6 +14,7 @@ import {
 import { RefreshCw, Filter } from "lucide-react";
 import { format, subDays, subHours } from "date-fns";
 import { MainLayout } from "../components/layout/MainLayout";
+import usePageMeta from "@/hooks/usePageMeta";
 
 // Simple LoadingSpinner component
 const LoadingSpinner = () => {
@@ -75,6 +76,12 @@ const timeRangeOptions = [
 
 const LogsPage = () => {
   const { user } = useAuthStore();
+
+  usePageMeta({
+    title: "Activity Logs",
+    description:
+      "View and filter the complete history of task activities and status changes.",
+  });
 
   // Filters state
   const [filters, setFilters] = useState<LogFilters>({

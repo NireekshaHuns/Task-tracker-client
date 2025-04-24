@@ -16,10 +16,17 @@ import {
 } from "../components/ui/card";
 import { Home } from "lucide-react";
 import { toast } from "sonner";
+import usePageMeta from "@/hooks/usePageMeta";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore();
+
+  usePageMeta({
+    title: "Login",
+    description:
+      "Sign in to your Task Tracker account to manage and track tasks.",
+  });
 
   const [formData, setFormData] = useState({
     username: "",

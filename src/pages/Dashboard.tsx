@@ -18,8 +18,8 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { toast } from "sonner";
+import usePageMeta from "@/hooks/usePageMeta";
 
-// Simple inline LoadingSpinner component
 const LoadingSpinner = () => {
   return (
     <div className="flex justify-center items-center">
@@ -29,9 +29,14 @@ const LoadingSpinner = () => {
 };
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
+
+  usePageMeta({
+    title: "Dashboard",
+    description:
+      "Manage your tasks using our intuitive Kanban board interface.",
+  });
 
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
   const [isFormOpen, setIsFormOpen] = useState(false);
