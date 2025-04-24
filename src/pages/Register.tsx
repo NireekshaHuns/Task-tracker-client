@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import { Home } from "lucide-react";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -60,94 +61,113 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-      <Card className="w-full max-w-md dark:bg-gray-800 dark:text-gray-100">
-        <CardHeader>
-          <CardTitle className="text-2xl">Register</CardTitle>
-          <CardDescription>
-            Create a new account to use the Task Tracker
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {registerMutation.isError && (
-              <Alert variant="destructive">
-                <AlertDescription>
-                  {(registerMutation.error as Error).message ||
-                    "Registration failed"}
-                </AlertDescription>
-              </Alert>
-            )}
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+      {/* Home button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-4 left-4"
+        onClick={() => navigate("/")}
+        title="Back to Home"
+      >
+        <Home className="h-5 w-5" />
+      </Button>
 
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                required
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </div>
+      <div className="flex flex-1 flex-col justify-center items-center px-6 py-12">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+            Create your account
+          </h2>
+        </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                name="username"
-                type="text"
-                required
-                value={formData.username}
-                onChange={handleChange}
-              />
-            </div>
+        <Card className="w-full max-w-md mt-8">
+          <CardHeader>
+            <CardTitle className="text-2xl">Register</CardTitle>
+            <CardDescription>
+              Create a new account to use the Task Tracker
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {registerMutation.isError && (
+                <Alert variant="destructive">
+                  <AlertDescription>
+                    {(registerMutation.error as Error).message ||
+                      "Registration failed"}
+                  </AlertDescription>
+                </Alert>
+              )}
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
-              <Select value={formData.role} onValueChange={handleRoleChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="submitter">Submitter</SelectItem>
-                  <SelectItem value="approver">Approver</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-sm text-gray-500 mt-1">
-                {formData.role === "submitter"
-                  ? "Submitters can create and manage tasks."
-                  : "Approvers can review and update task status."}
-              </p>
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  name="username"
+                  type="text"
+                  required
+                  value={formData.username}
+                  onChange={handleChange}
+                />
+              </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={registerMutation.isPending}
-            >
-              {registerMutation.isPending ? "Registering..." : "Register"}
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="role">Role</Label>
+                <Select value={formData.role} onValueChange={handleRoleChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="submitter">Submitter</SelectItem>
+                    <SelectItem value="approver">Approver</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-gray-500 mt-1">
+                  {formData.role === "submitter"
+                    ? "Submitters can create and manage tasks."
+                    : "Approvers can review and update task status."}
+                </p>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={registerMutation.isPending}
+              >
+                {registerMutation.isPending ? "Registering..." : "Register"}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button variant="ghost" onClick={() => navigate("/login")}>
+              Already have an account? Login
             </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button variant="ghost" onClick={() => navigate("/login")}>
-            Already have an account? Login
-          </Button>
-        </CardFooter>
-      </Card>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 };
