@@ -1,4 +1,3 @@
-// src/components/TaskCard.tsx
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../store/authStore";
@@ -99,19 +98,17 @@ const TaskCard = ({
     setIsDragging(false);
   };
 
-  // Check if user can edit this task
   const canEdit =
     user?.role === "submitter" &&
-    task.createdBy._id === user.id &&
+    (task.createdBy._id === user.id || task.createdBy._id === user._id) &&
     task.status === "pending";
 
   // Check if user can delete this task
   const canDelete =
     user?.role === "submitter" &&
-    task.createdBy._id === user.id &&
+    (task.createdBy._id === user.id || task.createdBy._id === user._id) &&
     task.status === "pending";
 
-  // Handle card click to open dialog
   const handleCardClick = (e: React.MouseEvent) => {
     if (!isDragging) {
       setDialogOpen(true);

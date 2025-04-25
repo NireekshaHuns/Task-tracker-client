@@ -1,18 +1,10 @@
-// src/layout/MainLayout.tsx
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  LogOut,
-  Menu,
-  Sun,
-  Moon,
-  CheckCircle,
-  UserRound,
-  ShieldUser,
-} from "lucide-react";
+import { LogOut, Menu, Sun, Moon, UserRound, ShieldUser } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
   Tooltip,
   TooltipContent,
@@ -98,6 +90,7 @@ export const MainLayout = ({
             </div>
 
             <div className="flex items-center space-x-4">
+              <NotificationBell />
               <div className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
                 <span className="font-medium">{user?.name}</span>
                 {user?.role === "approver" ? (
