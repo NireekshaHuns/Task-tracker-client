@@ -40,8 +40,8 @@ const ColumnContainer = ({
   // Handle reordering within a column
   const handleReorder = (
     draggedTaskId: string,
-    targetTaskId: string,
-    status: TaskStatus
+    status: TaskStatus,
+    targetIndex: number
   ) => {
     let columnTasks: Task[];
     let setColumnTasks: React.Dispatch<React.SetStateAction<Task[]>>;
@@ -68,11 +68,10 @@ const ColumnContainer = ({
         return;
     }
 
-    // Find indices
+    // Find the index of the dragged task
     const draggedIndex = columnTasks.findIndex((t) => t._id === draggedTaskId);
-    const targetIndex = columnTasks.findIndex((t) => t._id === targetTaskId);
 
-    if (draggedIndex === -1 || targetIndex === -1) return;
+    if (draggedIndex === -1 || draggedIndex === targetIndex) return;
 
     // Create a new array to avoid mutating state directly
     const newTasks = [...columnTasks];

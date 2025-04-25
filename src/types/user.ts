@@ -1,5 +1,5 @@
 export interface User {
-  id: string;
+  _id: string;
   name: string;
   role: "submitter" | "approver";
 }
@@ -15,7 +15,7 @@ export interface LoginCredentials {
   role: "submitter" | "approver";
 }
 
-export interface RegisterData extends Omit<LoginCredentials, 'role'> {
+export interface RegisterData extends Omit<LoginCredentials, "role"> {
   name: string;
   role: "submitter" | "approver";
 }

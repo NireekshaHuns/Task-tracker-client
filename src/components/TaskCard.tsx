@@ -100,16 +100,16 @@ const TaskCard = ({
 
   const canEdit =
     user?.role === "submitter" &&
-    (task.createdBy._id === user.id || task.createdBy._id === user._id) &&
+    (task.createdBy._id === user._id || task.createdBy._id === user._id) &&
     task.status === "pending";
 
   // Check if user can delete this task
   const canDelete =
     user?.role === "submitter" &&
-    (task.createdBy._id === user.id || task.createdBy._id === user._id) &&
+    (task.createdBy._id === user._id || task.createdBy._id === user._id) &&
     task.status === "pending";
 
-  const handleCardClick = (e: React.MouseEvent) => {
+  const handleCardClick = () => {
     if (!isDragging) {
       setDialogOpen(true);
     }
