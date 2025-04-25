@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Home } from "lucide-react";
+import { toast } from "sonner";
 import usePageMeta from "@/hooks/usePageMeta";
 
 const Register = () => {
@@ -40,12 +41,10 @@ const Register = () => {
     role: "submitter" as "submitter" | "approver",
   });
 
-  // Handle registration mutation
   const registerMutation = useMutation({
     mutationFn: authService.register,
     onSuccess: () => {
-      // Show success message and redirect to login
-      alert("Registration successful! Please login.");
+      toast.success("Registration successful! Please login");
       navigate("/login");
     },
   });

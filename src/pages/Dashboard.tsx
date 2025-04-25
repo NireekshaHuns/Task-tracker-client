@@ -1,7 +1,6 @@
 // src/pages/Dashboard.tsx
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { taskService, TaskError } from "../services/taskService";
 import { useAuthStore } from "../store/authStore";
 import { Task, TaskStatus, CreateTaskData } from "../types/task";
