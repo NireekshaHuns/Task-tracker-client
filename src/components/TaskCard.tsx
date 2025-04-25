@@ -5,7 +5,7 @@ import { useAuthStore } from "../store/authStore";
 import { taskService, TaskError } from "../services/taskService";
 import { Task } from "../types/task";
 import { Button } from "./ui/button";
-import { Trash, Edit, Clock } from "lucide-react";
+import { Trash, Edit, Clock, UserCircle2Icon, RefreshCw } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogFooter } from "./ui/dialog";
@@ -136,37 +136,9 @@ const TaskCard = ({
         onClick={handleCardClick}
         {...props}
       >
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="font-medium text-gray-900 dark:text-white">
-            {truncatedTitle}
-          </h3>
-
-          <div className="flex space-x-1">
-            {canEdit && (
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8"
-                onClick={(e) => handleActionClick(e, () => onEdit?.(task))}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-            )}
-            {canDelete && (
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 text-red-500 hover:text-red-700"
-                onClick={(e) =>
-                  handleActionClick(e, () => deleteMutation.mutate())
-                }
-                disabled={deleteMutation.isPending}
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        </div>
+        <h3 className="font-medium text-gray-900 dark:text-white mb-2">
+          {truncatedTitle}
+        </h3>
 
         {truncatedDescription && (
           <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
@@ -174,7 +146,7 @@ const TaskCard = ({
           </p>
         )}
 
-        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+        <div className="flex flex-col text-xs text-gray-500 dark:text-gray-400 mt-2 space-y-1">
           <div className="flex items-center">
             <Clock className="h-3 w-3 mr-1" />
             <span>
@@ -183,7 +155,38 @@ const TaskCard = ({
               })}
             </span>
           </div>
-          <div>By: {task.createdBy.name}</div>
+          <div className="flex justify-between mb-2">
+            <div className="flex items-center">
+              <UserCircle2Icon className="h-3 w-3 mr-1" />
+              <span>{task.createdBy.name}</span>
+            </div>
+
+            <div className="flex space-x-1">
+              {canEdit && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8"
+                  onClick={(e) => handleActionClick(e, () => onEdit?.(task))}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              )}
+              {canDelete && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-red-500 hover:text-red-700"
+                  onClick={(e) =>
+                    handleActionClick(e, () => deleteMutation.mutate())
+                  }
+                  disabled={deleteMutation.isPending}
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -209,6 +212,16 @@ const TaskCard = ({
                 Status: <span className="capitalize">{task.status}</span>
               </p>
               <p>Created by: {task.createdBy.name}</p>
+              {task.updatedBy && (
+                <p className="flex items-center">
+                  <RefreshCw className="h-4 w-4 mr-1" />
+                  Last updated by {task.updatedBy.name}{" "}
+                  {task.updatedAt &&
+                    formatDistanceToNow(new Date(task.updatedAt), {
+                      addSuffix: true,
+                    })}
+                </p>
+              )}
             </div>
           </div>
 
