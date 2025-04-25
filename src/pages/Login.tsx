@@ -14,14 +14,22 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { Home } from "lucide-react";
 import { toast } from "sonner";
-import usePageMeta from "@/hooks/usePageMeta";
+import usePageMeta from "../hooks/usePageMeta";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore();
 
+  // Add page metadata
   usePageMeta({
     title: "Login",
     description:
@@ -31,24 +39,47 @@ const Login = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    role: "submitter" as "submitter" | "approver",
   });
 
   const loginMutation = useMutation({
     mutationFn: authService.login,
     onSuccess: (data) => {
       login(data.token, data.user);
+      toast.success(`Welcome back, ${data.user.name}!`, {
+        description: `You are now signed in as a ${data.user.role}.`,
+      });
       navigate("/dashboard");
     },
     onError: (error: any) => {
-      toast.error("Login Failed", {
-        description: error.message,
-      });
+      const errorMessage = error.message || "Login failed";
+
+      if (errorMessage.includes("don't have access as")) {
+        toast.error("Role Mismatch", {
+          description: errorMessage,
+        });
+      } else if (errorMessage.includes("Invalid credentials")) {
+        toast.error("Authentication Failed", {
+          description: "The username or password you entered is incorrect.",
+        });
+      } else {
+        toast.error("Login Failed", {
+          description: errorMessage,
+        });
+      }
     },
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleRoleChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      role: value as "submitter" | "approver",
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -109,18 +140,36 @@ const Login = () => {
                 />
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="role">Sign in as</Label>
+                <Select value={formData.role} onValueChange={handleRoleChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="submitter">Submitter</SelectItem>
+                    <SelectItem value="approver">Approver</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-gray-500 mt-1">
+                  {formData.role === "submitter"
+                    ? "Submitters can create and manage tasks."
+                    : "Approvers can review and update task status."}
+                </p>
+              </div>
+
               <Button
                 type="submit"
                 className="w-full"
                 disabled={loginMutation.isPending}
               >
-                {loginMutation.isPending ? "Logging in..." : "Login"}
+                {loginMutation.isPending ? "Signing in..." : "Sign In"}
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex justify-between">
+          <CardFooter className="flex justify-center">
             <Button variant="ghost" onClick={() => navigate("/register")}>
-              Create an account
+              Don't have an account? Register
             </Button>
           </CardFooter>
         </Card>
