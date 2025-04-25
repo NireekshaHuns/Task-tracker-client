@@ -29,11 +29,17 @@ const ColumnContainer = ({
 
   // Group tasks by status whenever they change
   useEffect(() => {
-    if (tasks.length > 0) {
-      setPendingTasks(tasks.filter((task) => task.status === "pending"));
-      setApprovedTasks(tasks.filter((task) => task.status === "approved"));
-      setDoneTasks(tasks.filter((task) => task.status === "done"));
-      setRejectedTasks(tasks.filter((task) => task.status === "rejected"));
+    setPendingTasks(tasks.filter((task) => task.status === "pending"));
+    setApprovedTasks(tasks.filter((task) => task.status === "approved"));
+    setDoneTasks(tasks.filter((task) => task.status === "done"));
+    setRejectedTasks(tasks.filter((task) => task.status === "rejected"));
+
+    // If all tasks are removed, reset all columns explicitly
+    if (tasks.length === 0) {
+      setPendingTasks([]);
+      setApprovedTasks([]);
+      setDoneTasks([]);
+      setRejectedTasks([]);
     }
   }, [tasks]);
 
