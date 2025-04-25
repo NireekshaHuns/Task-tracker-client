@@ -1,7 +1,15 @@
 // src/layout/MainLayout.tsx
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Menu, Sun, Moon, CheckCircle } from "lucide-react";
+import {
+  LogOut,
+  Menu,
+  Sun,
+  Moon,
+  CheckCircle,
+  UserRound,
+  ShieldUser,
+} from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme/ThemeProvider";
@@ -90,7 +98,6 @@ export const MainLayout = ({
             </div>
 
             <div className="flex items-center space-x-4">
-              {/* User information */}
               <div className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
                 <span className="font-medium">{user?.name}</span>
                 {user?.role === "approver" ? (
@@ -98,7 +105,7 @@ export const MainLayout = ({
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span className="inline-flex items-center ml-2">
-                          <CheckCircle className="h-4 w-4 text-blue-500" />
+                          <ShieldUser className="h-4 w-4 text-blue-500" />
                         </span>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -107,10 +114,18 @@ export const MainLayout = ({
                     </Tooltip>
                   </TooltipProvider>
                 ) : (
-                  <>
-                    <span className="px-2">|</span>
-                    <span className="capitalize">{user?.role}</span>
-                  </>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex items-center ml-2">
+                          <UserRound className="h-4 w-4 text-blue-500" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Submitter</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
               </div>
 
