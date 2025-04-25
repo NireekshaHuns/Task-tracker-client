@@ -29,6 +29,7 @@ export const ThemeProvider = ({
   defaultTheme = "system",
 }: ThemeProviderProps) => {
   const { theme, setTheme } = useThemeStore();
+  console.log(defaultTheme);
 
   useEffect(() => {
     const root = window.document.documentElement;

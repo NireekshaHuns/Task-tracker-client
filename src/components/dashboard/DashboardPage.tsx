@@ -1,6 +1,5 @@
 // src/components/dashboard/DashboardPage.tsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { taskService, TaskError } from "../../services/taskService";
 import { useAuthStore } from "../../store/authStore";
@@ -20,7 +19,6 @@ import { MainLayout } from "../layout/MainLayout";
 import TaskForm from "../TaskForm";
 
 const DashboardPage = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
 
