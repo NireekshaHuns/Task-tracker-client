@@ -169,8 +169,18 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    if (tasks.length === 0) {
+      setColumnTasks({
+        pending: [],
+        approved: [],
+        done: [],
+        rejected: [],
+      });
+    }
+  }, [tasks.length === 0 ? "empty" : "non-empty"]);
+
+  useEffect(() => {
     if (tasks.length > 0) {
-      // Group tasks by status
       setColumnTasks({
         pending: tasks.filter((task) => task.status === "pending"),
         approved: tasks.filter((task) => task.status === "approved"),

@@ -1,8 +1,9 @@
 // src/components/dashboard/DashboardPage.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { taskService, TaskError } from "../../services/taskService";
 import { useAuthStore } from "../../store/authStore";
+import { useTaskStore } from "../../store/taskStore"; // Import the task store
 import { Task, TaskStatus, CreateTaskData } from "../../types/task";
 import ColumnContainer from "./ColumnContainer";
 import { Button } from "../ui/button";
@@ -22,6 +23,9 @@ const DashboardPage = () => {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
 
+  // Get task store methods
+  const { tasks: storeTasks, setTasks, refreshCounter } = useTaskStore();
+
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
@@ -33,13 +37,20 @@ const DashboardPage = () => {
     isError,
     error,
   } = useQuery({
-    queryKey: ["tasks", statusFilter],
+    queryKey: ["tasks", statusFilter, refreshCounter],
     queryFn: () =>
       statusFilter === "all"
         ? taskService.getTasks()
         : taskService.getTasks(statusFilter),
     retry: 1,
   });
+
+  // Sync fetched tasks with the store
+  useEffect(() => {
+    if (tasks) {
+      setTasks(tasks);
+    }
+  }, [tasks, setTasks]);
 
   // Create task mutation
   const createTaskMutation = useMutation({
@@ -152,7 +163,7 @@ const DashboardPage = () => {
 
       {/* Kanban board */}
       <ColumnContainer
-        tasks={tasks}
+        tasks={storeTasks} // Use tasks from the store instead of directly from React Query
         onTaskEdit={handleEditTask}
         onDrop={handleStatusChange}
         isLoading={isLoading}

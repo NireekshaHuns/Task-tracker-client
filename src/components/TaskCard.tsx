@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../store/authStore";
 import { taskService, TaskError } from "../services/taskService";
@@ -23,6 +23,8 @@ const TaskCard = ({
 }: TaskCardProps & React.HTMLAttributes<HTMLDivElement>) => {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
+  // Get task store methods
+
   const [isDragging, setIsDragging] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -61,15 +63,22 @@ const TaskCard = ({
       // Close dialog first
       setDialogOpen(false);
 
-      // Force a clean reload of the data
-      queryClient.resetQueries({ queryKey: ["tasks"] });
-      queryClient.refetchQueries({ queryKey: ["tasks"] });
+      // Force a complete refetch to get the empty array
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
 
       toast.success(data.message || "Task deleted successfully");
     },
-    // ...
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof TaskError ? error.message : "Failed to delete task";
+
+      toast.error("Error", {
+        description: errorMessage,
+      });
+    },
   });
 
+  // Handle drag events
   const handleDragStart = (e: React.DragEvent) => {
     // Prevent dialog from opening when starting drag
     e.stopPropagation();
@@ -95,6 +104,21 @@ const TaskCard = ({
     setIsDragging(false);
   };
 
+  // Get creator ID, handling different formats of createdBy data
+  const getCreatedById = () => {
+    if (typeof task.createdBy === "string") {
+      return task.createdBy;
+    } else if (
+      task.createdBy &&
+      typeof task.createdBy === "object" &&
+      "_id" in task.createdBy
+    ) {
+      return task.createdBy._id;
+    }
+    return null;
+  };
+
+  // Get creator name, handling different formats of createdBy data
   const getCreatedByName = () => {
     if (
       typeof task.createdBy === "object" &&
@@ -106,14 +130,16 @@ const TaskCard = ({
     return "Unknown";
   };
 
+  const createdById = getCreatedById();
+  const userId = user?._id;
+
+  // Fixed permission checks with string conversion
   const canEdit =
     user?.role === "submitter" &&
-    (typeof task.createdBy === "object"
-      ? String(task.createdBy._id) === String(user._id || user._id)
-      : String(task.createdBy) === String(user._id || user._id)) &&
+    String(createdById) === String(userId) &&
     task.status === "pending";
 
-  const canDelete = canEdit; // Same logic for delete
+  const canDelete = canEdit;
 
   const handleCardClick = () => {
     if (!isDragging) {
