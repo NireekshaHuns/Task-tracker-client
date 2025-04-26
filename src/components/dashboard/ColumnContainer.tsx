@@ -1,9 +1,8 @@
-// src/components/dashboard/ColumnContainer.tsx
 import { useState, useEffect } from "react";
 import { Task, TaskStatus } from "../../types/task";
 import { TaskError } from "../../services/taskService";
 import { useTaskStore } from "../../store/taskStore"; // Import the task store
-import TaskColumn from "../TaskColumn";
+import TaskColumn from "../tasks/TaskColumn";
 
 interface ColumnContainerProps {
   tasks: Task[];

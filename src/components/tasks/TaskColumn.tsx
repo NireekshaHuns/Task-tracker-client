@@ -1,9 +1,8 @@
-// src/components/TaskColumn.tsx
+
 import { useState } from "react";
-import { Task, TaskStatus } from "../types/task";
-import { useAuthStore } from "../store/authStore";
+import { Task, TaskStatus } from "../../types/task";
+import { useAuthStore } from "../../store/authStore";
 import { toast } from "sonner";
-import TaskCard from "./tasks/TaskCard";
 
 interface TaskColumnProps {
   title: string;
@@ -28,7 +27,7 @@ const TaskColumn = ({
     null
   );
 
-  // Handle drag events
+  
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
 
@@ -36,7 +35,7 @@ const TaskColumn = ({
       setIsDropTarget(true);
     }
 
-    // Find the closest task-card element
+    
     const taskCard = (e.target as HTMLElement).closest(
       ".task-card"
     ) as HTMLElement;
@@ -67,28 +66,28 @@ const TaskColumn = ({
     const taskId = e.dataTransfer.getData("taskId");
     const sourceStatus = e.dataTransfer.getData("taskStatus") as TaskStatus;
 
-    // Find the task element being dropped on
+    
     const taskCard = (e.target as HTMLElement).closest(
       ".task-card"
     ) as HTMLElement;
 
-    // Case 1: If dropped directly on a task card
+    
     if (taskCard) {
       const targetTaskId = taskCard.getAttribute("data-task-id");
 
-      // Find target index
+      
       const targetIndex = tasks.findIndex((t) => t._id === targetTaskId);
 
-      // If source and target columns are the same, reorder
+      
       if (sourceStatus === status && targetIndex !== -1) {
         onReorder(taskId, status, targetIndex);
         return;
       }
     }
 
-    // Case 2: If dropped at the end of the column or on different status column
+    
     if (sourceStatus !== status) {
-      // Handle regular status change
+      
       if (user?.role === "approver") {
         onDrop(taskId, status);
       } else {
@@ -97,12 +96,12 @@ const TaskColumn = ({
         });
       }
     } else {
-      // Dropped at the end of the same column
+      
       onReorder(taskId, status, tasks.length);
     }
   };
 
-  // Define column styling based on status
+  
   const getColumnStyle = () => {
     switch (status) {
       case "pending":
@@ -166,7 +165,7 @@ const TaskColumn = ({
                 onError={(e) => {
                   (
                     e.target as HTMLImageElement
-                  ).src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' fill='none' viewBox='0 0 24 24' stroke='%239ca3af' stroke-width='1'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' /%3E%3C/svg%3E`;
+                  ).src = `data:image/svg+xml,%3Csvg xmlns='http:
                 }}
               />
             </div>
