@@ -147,34 +147,28 @@ const LogsPage = () => {
       backButtonPath="/dashboard"
       backButtonText=""
     >
-      <div className="flex flex-col w-full">
-        <div className="flex justify-between items-center mb-2">
-          <div>
-            <LogsFilters
-              filters={filters}
-              timeRange={timeRange}
-              showFilters={showFilters}
-              submitters={submitters}
-              userRole={user?.role}
-              setShowFilters={setShowFilters}
-              handleFilterChange={handleFilterChange}
-              applyTimeRangeFilter={applyTimeRangeFilter}
-              clearFilters={clearFilters}
-            />
-          </div>
+      <div className="relative mb-6">
+        <LogsFilters
+          filters={filters}
+          timeRange={timeRange}
+          showFilters={showFilters}
+          submitters={submitters}
+          userRole={user?.role}
+          setShowFilters={setShowFilters}
+          handleFilterChange={handleFilterChange}
+          applyTimeRangeFilter={applyTimeRangeFilter}
+          clearFilters={clearFilters}
+        />
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleRefresh}
-            className="transition-transform duration-300 hover:rotate-180 cursor-pointer"
-            disabled={isLoading}
-          >
-            <RefreshCw
-              className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-            />
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleRefresh}
+          className="absolute top-0 right-0 transition-transform duration-300 hover:rotate-180 cursor-pointer"
+          disabled={isLoading}
+        >
+          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+        </Button>
       </div>
 
       {/* Error state */}
