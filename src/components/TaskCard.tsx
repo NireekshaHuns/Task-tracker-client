@@ -23,6 +23,8 @@ const TaskCard = ({
 }: TaskCardProps & React.HTMLAttributes<HTMLDivElement>) => {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
+  // Get task store methods
+
   const [isDragging, setIsDragging] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -57,10 +59,14 @@ const TaskCard = ({
 
   const deleteMutation = useMutation({
     mutationFn: () => taskService.deleteTask(task._id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast.success("Task deleted successfully");
+    onSuccess: (data) => {
+      // Close dialog first
       setDialogOpen(false);
+
+      // Force a complete refetch to get the empty array
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+
+      toast.success(data.message || "Task deleted successfully");
     },
     onError: (error: unknown) => {
       const errorMessage =
@@ -98,16 +104,42 @@ const TaskCard = ({
     setIsDragging(false);
   };
 
+  // Get creator ID, handling different formats of createdBy data
+  const getCreatedById = () => {
+    if (typeof task.createdBy === "string") {
+      return task.createdBy;
+    } else if (
+      task.createdBy &&
+      typeof task.createdBy === "object" &&
+      "_id" in task.createdBy
+    ) {
+      return task.createdBy._id;
+    }
+    return null;
+  };
+
+  // Get creator name, handling different formats of createdBy data
+  const getCreatedByName = () => {
+    if (
+      typeof task.createdBy === "object" &&
+      task.createdBy &&
+      "name" in task.createdBy
+    ) {
+      return task.createdBy.name;
+    }
+    return "Unknown";
+  };
+
+  const createdById = getCreatedById();
+  const userId = user?._id;
+
+  // Fixed permission checks with string conversion
   const canEdit =
     user?.role === "submitter" &&
-    (task.createdBy._id === user._id || task.createdBy._id === user._id) &&
+    String(createdById) === String(userId) &&
     task.status === "pending";
 
-  // Check if user can delete this task
-  const canDelete =
-    user?.role === "submitter" &&
-    (task.createdBy._id === user._id || task.createdBy._id === user._id) &&
-    task.status === "pending";
+  const canDelete = canEdit;
 
   const handleCardClick = () => {
     if (!isDragging) {
@@ -155,7 +187,7 @@ const TaskCard = ({
           <div className="flex justify-between mb-2">
             <div className="flex items-center">
               <UserCircle2Icon className="h-3 w-3 mr-1" />
-              <span>{task.createdBy.name}</span>
+              <span>{getCreatedByName()}</span>
             </div>
 
             <div className="flex space-x-1">
@@ -208,11 +240,15 @@ const TaskCard = ({
               <p>
                 Status: <span className="capitalize">{task.status}</span>
               </p>
-              <p>Created by: {task.createdBy.name}</p>
+              <p>Created by: {getCreatedByName()}</p>
               {task.updatedBy && (
                 <p className="flex items-center">
                   <RefreshCw className="h-4 w-4 mr-1" />
-                  Last updated by {task.updatedBy.name}{" "}
+                  Last updated by{" "}
+                  {typeof task.updatedBy === "object" &&
+                  "name" in task.updatedBy
+                    ? task.updatedBy.name
+                    : "Unknown"}{" "}
                   {task.updatedAt &&
                     formatDistanceToNow(new Date(task.updatedAt), {
                       addSuffix: true,
