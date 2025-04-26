@@ -14,6 +14,14 @@ import { LogPagination } from "../components/logs/LogsPagination";
 import { ErrorDisplay } from "../components/logs/ErrorDisplay";
 import { EmptyState } from "../components/logs/States";
 import { SkeletonLoader } from "../components/logs/SkeletonLoader";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const LogsPage = () => {
   const { user } = useAuthStore();
@@ -146,66 +154,81 @@ const LogsPage = () => {
       backButtonPath="/dashboard"
       backButtonText=""
     >
-      <div className="relative mb-6">
-        <LogsFilters
-          filters={filters}
-          timeRange={timeRange}
-          showFilters={showFilters}
-          submitters={submitters}
-          userRole={user?.role}
-          setShowFilters={setShowFilters}
-          handleFilterChange={handleFilterChange}
-          applyTimeRangeFilter={applyTimeRangeFilter}
-          clearFilters={clearFilters}
-        />
+      <div>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Activity Logs</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <div className="relative my-6">
+          <LogsFilters
+            filters={filters}
+            timeRange={timeRange}
+            showFilters={showFilters}
+            submitters={submitters}
+            userRole={user?.role}
+            setShowFilters={setShowFilters}
+            handleFilterChange={handleFilterChange}
+            applyTimeRangeFilter={applyTimeRangeFilter}
+            clearFilters={clearFilters}
+          />
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleRefresh}
-          className="absolute top-0 right-0 transition-transform duration-300 hover:rotate-180 cursor-pointer"
-          disabled={isLoading}
-        >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-        </Button>
-      </div>
-
-      {/* Error state */}
-      {isError && <ErrorDisplay error={error} onRetry={handleRefresh} />}
-
-      {/* Loading state */}
-      {isLoading ? (
-        <>
-          {/* Skeleton loader for table */}
-          <SkeletonLoader rows={7} />
-
-          {/* Simulated pagination skeleton */}
-          <div className="flex justify-between items-center mt-6 animate-pulse">
-            <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-64"></div>
-            <div className="flex space-x-2">
-              <div className="h-8 bg-gray-200 dark:bg-gray-600 rounded w-20"></div>
-              <div className="h-8 bg-gray-200 dark:bg-gray-600 rounded w-20"></div>
-            </div>
-          </div>
-        </>
-      ) : data?.logs.length === 0 ? (
-        <EmptyState />
-      ) : (
-        <>
-          {/* Logs table */}
-          <LogsTable logs={data?.logs || []} />
-
-          {/* Pagination */}
-          {data && data.pagination && data.pagination.pages > 1 && (
-            <LogPagination
-              pagination={data.pagination}
-              currentPage={filters.page || 1}
-              onPrevPage={handlePrevPage}
-              onNextPage={handleNextPage}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRefresh}
+            className="absolute top-0 right-0 transition-transform duration-300 hover:rotate-180 cursor-pointer"
+            disabled={isLoading}
+          >
+            <RefreshCw
+              className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
             />
-          )}
-        </>
-      )}
+          </Button>
+        </div>
+
+        {/* Error state */}
+        {isError && <ErrorDisplay error={error} onRetry={handleRefresh} />}
+
+        {/* Loading state */}
+        {isLoading ? (
+          <>
+            {/* Skeleton loader for table */}
+            <SkeletonLoader rows={7} />
+
+            {/* Simulated pagination skeleton */}
+            <div className="flex justify-between items-center mt-6 animate-pulse">
+              <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-64"></div>
+              <div className="flex space-x-2">
+                <div className="h-8 bg-gray-200 dark:bg-gray-600 rounded w-20"></div>
+                <div className="h-8 bg-gray-200 dark:bg-gray-600 rounded w-20"></div>
+              </div>
+            </div>
+          </>
+        ) : data?.logs.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <>
+            {/* Logs table */}
+            <LogsTable logs={data?.logs || []} />
+
+            {/* Pagination */}
+            {data && data.pagination && data.pagination.pages > 1 && (
+              <LogPagination
+                pagination={data.pagination}
+                currentPage={filters.page || 1}
+                onPrevPage={handlePrevPage}
+                onNextPage={handleNextPage}
+              />
+            )}
+          </>
+        )}
+      </div>
     </MainLayout>
   );
 };

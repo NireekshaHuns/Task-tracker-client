@@ -29,7 +29,6 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore();
 
-  // Add page metadata
   usePageMeta({
     title: "Login",
     description:
@@ -101,10 +100,11 @@ const Login = () => {
       </Button>
 
       <div className="flex flex-1 flex-col justify-center items-center px-6 py-12">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-            Sign in to your account
-          </h2>
+        <div className="w-full max-w-md text-center">
+          <h1 className="text-3xl font-bold text-foreground">Task Tracker</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Sign in to manage your tasks
+          </p>
         </div>
 
         <Card className="w-full max-w-md mt-8">
