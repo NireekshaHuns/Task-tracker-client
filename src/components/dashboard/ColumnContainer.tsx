@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Task, TaskStatus } from "../../types/task";
 import { TaskError } from "../../services/taskService";
 import { useTaskStore } from "../../store/taskStore"; // Import the task store
-import TaskColumn from "../tasks/TaskColumn";
+import TaskColumn from "../TaskColumn";
 
 interface ColumnContainerProps {
   tasks: Task[];
@@ -14,7 +14,6 @@ interface ColumnContainerProps {
 }
 
 const ColumnContainer = ({
-  tasks,
   onTaskEdit,
   onDrop,
   isLoading,
@@ -69,10 +68,6 @@ const ColumnContainer = ({
 
     // Insert at target position
     newTasks.splice(targetIndex, 0, draggedTask);
-
-    // Update state - for drag/drop reordering, we'll still use local state
-    // This would need to be updated to also update the store if you implement
-    // persistence of the ordering
   };
 
   // Track refresh counter to force re-renders

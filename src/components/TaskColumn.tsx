@@ -1,9 +1,9 @@
-// src/components/TaskColumn.tsx
 import { useState } from "react";
 import { Task, TaskStatus } from "../types/task";
 import { useAuthStore } from "../store/authStore";
 import { toast } from "sonner";
 import TaskCard from "./tasks/TaskCard";
+import { Badge } from "@/components/ui/badge";
 
 interface TaskColumnProps {
   title: string;
@@ -146,9 +146,12 @@ const TaskColumn = ({
       onDrop={handleDrop}
       data-status={status}
     >
-      <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-3 capitalize">
-        {title}
-      </h2>
+      <div className="flex justify-between mb-3">
+        <h2 className="font-semibold text-gray-700 dark:text-gray-200 capitalize items-center">
+          {title}
+        </h2>
+        <Badge variant="secondary">{tasks.length}</Badge>
+      </div>
       <div
         className={`space-y-3 min-h-[200px] ${
           isDropTarget

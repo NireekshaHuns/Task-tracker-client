@@ -11,6 +11,7 @@ import { ThemeProvider } from "./components/theme/ThemeProvider";
 import AuthRedirect from "./components/authRedirect";
 import LogsPage from "./pages/LogsPage";
 import LandingPage from "./pages/LandingPage";
+import ApproverAnalyticsPage from "./pages/ApproverAnalytics";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -66,6 +67,14 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <LogsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <ProtectedRoute>
+                  <ApproverAnalyticsPage />
                 </ProtectedRoute>
               }
             />

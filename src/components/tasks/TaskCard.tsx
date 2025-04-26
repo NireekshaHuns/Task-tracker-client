@@ -9,6 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogFooter } from ".././ui/dialog";
 import TaskCardContent from "./TaskCardContent";
+import { Badge } from "../ui/badge";
 
 interface TaskCardProps {
   task: Task;
@@ -185,9 +186,7 @@ const TaskCard = ({
                   addSuffix: true,
                 })}
               </p>
-              <p>
-                Status: <span className="capitalize">{task.status}</span>
-              </p>
+              <Badge variant="default">{task.status}</Badge>
               <p>Created by: {getCreatedByName()}</p>
               {task.updatedBy && (
                 <p className="flex items-center">
