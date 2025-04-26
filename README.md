@@ -11,11 +11,11 @@ Task Manager is a modern web application designed to streamline task management 
 - Node.js (v16+)
 - npm or yarn
 
-### Installation
-
 ### Docker Setup
 
 For containerized deployment with both frontend and backend, see our [task-tracker-orchestration](https://github.com/NireekshaHuns/EVident-Battery-Orchestration-Service) repository which contains the Docker Compose configuration.
+
+### Local Installation
 
 ```bash
 # 1. Install dependencies
