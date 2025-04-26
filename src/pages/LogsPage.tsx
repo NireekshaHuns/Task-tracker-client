@@ -1,4 +1,3 @@
-// src/pages/LogsPage.tsx
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { logService, LogFilters } from "../services/logService";

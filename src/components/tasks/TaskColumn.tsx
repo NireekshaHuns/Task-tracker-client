@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { Task, TaskStatus } from "../../types/task";
 import { useAuthStore } from "../../store/authStore";
 import { toast } from "sonner";
+import TaskCard from "./TaskCard"; // Added missing import
 
 interface TaskColumnProps {
   title: string;
@@ -17,7 +17,7 @@ const TaskColumn = ({
   title,
   status,
   tasks,
-  onTaskEdit,
+  onTaskEdit, // Added missing prop
   onDrop,
   onReorder,
 }: TaskColumnProps) => {
@@ -27,7 +27,6 @@ const TaskColumn = ({
     null
   );
 
-  
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
 
@@ -35,7 +34,6 @@ const TaskColumn = ({
       setIsDropTarget(true);
     }
 
-    
     const taskCard = (e.target as HTMLElement).closest(
       ".task-card"
     ) as HTMLElement;
@@ -66,28 +64,22 @@ const TaskColumn = ({
     const taskId = e.dataTransfer.getData("taskId");
     const sourceStatus = e.dataTransfer.getData("taskStatus") as TaskStatus;
 
-    
     const taskCard = (e.target as HTMLElement).closest(
       ".task-card"
     ) as HTMLElement;
 
-    
     if (taskCard) {
       const targetTaskId = taskCard.getAttribute("data-task-id");
 
-      
       const targetIndex = tasks.findIndex((t) => t._id === targetTaskId);
 
-      
       if (sourceStatus === status && targetIndex !== -1) {
         onReorder(taskId, status, targetIndex);
         return;
       }
     }
 
-    
     if (sourceStatus !== status) {
-      
       if (user?.role === "approver") {
         onDrop(taskId, status);
       } else {
@@ -96,12 +88,10 @@ const TaskColumn = ({
         });
       }
     } else {
-      
       onReorder(taskId, status, tasks.length);
     }
   };
 
-  
   const getColumnStyle = () => {
     switch (status) {
       case "pending":
@@ -163,9 +153,8 @@ const TaskColumn = ({
                 alt={`No ${status} tasks`}
                 className="w-full h-full object-contain opacity-60"
                 onError={(e) => {
-                  (
-                    e.target as HTMLImageElement
-                  ).src = `data:image/svg+xml,%3Csvg xmlns='http:
+                  (e.target as HTMLImageElement).src =
+                    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ccc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='9' y1='9' x2='15' y2='15'%3E%3C/line%3E%3Cline x1='15' y1='9' x2='9' y2='15'%3E%3C/line%3E%3C/svg%3E";
                 }}
               />
             </div>
