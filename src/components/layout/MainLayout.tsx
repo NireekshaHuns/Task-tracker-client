@@ -164,6 +164,30 @@ export const MainLayout = ({
                     Activity Logs
                   </DropdownMenuItem>
 
+                  {user?.role == "approver" && (
+                    <DropdownMenuItem
+                      onClick={() => navigate("/analytics")}
+                      className="cursor-pointer"
+                    >
+                      <svg
+                        className="mr-2 h-4 w-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M21 21H3" />
+                        <path d="M21 3v18" />
+                        <rect x="5" y="9" width="4" height="12" />
+                        <rect x="12" y="13" width="4" height="8" />
+                        {/* <rect x="17" y="5" width="34" height="16" /> */}
+                      </svg>
+                      Analytics
+                    </DropdownMenuItem>
+                  )}
+
                   <DropdownMenuSeparator />
 
                   <DropdownMenuItem
