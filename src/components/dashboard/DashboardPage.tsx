@@ -17,7 +17,7 @@ import {
 } from "../ui/select";
 import { toast } from "sonner";
 import { MainLayout } from "../layout/MainLayout";
-import TaskForm from "../TaskForm";
+import TaskForm from "../tasks/TaskForm";
 
 const DashboardPage = () => {
   const queryClient = useQueryClient();

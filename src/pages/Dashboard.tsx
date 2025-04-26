@@ -6,7 +6,6 @@ import { useAuthStore } from "../store/authStore";
 import { Task, TaskStatus, CreateTaskData } from "../types/task";
 import { MainLayout } from "../components/layout/MainLayout";
 import TaskColumn from "../components/TaskColumn";
-import TaskForm from "../components/TaskForm";
 import { Button } from "../components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -18,6 +17,7 @@ import {
 } from "../components/ui/select";
 import { toast } from "sonner";
 import usePageMeta from "@/hooks/usePageMeta";
+import TaskForm from "@/components/tasks/TaskForm";
 
 const LoadingSpinner = () => {
   return (
