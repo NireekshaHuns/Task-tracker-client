@@ -1,11 +1,7 @@
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
 
-/**
- * Reusable textarea component with consistent styles.
- * Handles focus, disabled, and validation states.
- */
+// Textarea component for multiline input fields
 function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
     <textarea

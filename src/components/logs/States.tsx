@@ -1,4 +1,3 @@
-// src/components/logs/EmptyState.tsx
 import React from "react";
 
 export const EmptyState: React.FC = () => {

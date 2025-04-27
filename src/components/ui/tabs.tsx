@@ -1,8 +1,8 @@
-import * as React from "react"
-import * as TabsPrimitive from "@radix-ui/react-tabs"
+import * as React from "react";
+import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { cn } from "@/lib/utils";
 
-import { cn } from "@/lib/utils"
-
+// Root Tabs container
 function Tabs({
   className,
   ...props
@@ -13,9 +13,10 @@ function Tabs({
       className={cn("flex flex-col gap-2", className)}
       {...props}
     />
-  )
+  );
 }
 
+// List container for tab triggers
 function TabsList({
   className,
   ...props
@@ -29,9 +30,10 @@ function TabsList({
       )}
       {...props}
     />
-  )
+  );
 }
 
+// Single tab trigger/button
 function TabsTrigger({
   className,
   ...props
@@ -45,9 +47,10 @@ function TabsTrigger({
       )}
       {...props}
     />
-  )
+  );
 }
 
+// Content panel shown for active tab
 function TabsContent({
   className,
   ...props
@@ -58,7 +61,7 @@ function TabsContent({
       className={cn("flex-1 outline-none", className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+export { Tabs, TabsList, TabsTrigger, TabsContent };

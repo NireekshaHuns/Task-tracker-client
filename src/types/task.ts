@@ -17,6 +17,7 @@ export interface Task {
   };
 }
 
+// Payload for creating a new task
 export interface CreateTaskData {
   title: string;
   description?: string;

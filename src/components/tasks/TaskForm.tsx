@@ -22,6 +22,7 @@ interface TaskFormProps {
   isSubmitting?: boolean;
 }
 
+// Form component to create or edit a task
 const TaskForm = ({
   isOpen,
   onClose,
@@ -33,8 +34,6 @@ const TaskForm = ({
     title: "",
     description: "",
   });
-
-  // AI generation state
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Reset form when dialog opens/closes or initialData changes
@@ -47,6 +46,7 @@ const TaskForm = ({
     }
   }, [isOpen, initialData]);
 
+  // Handle input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -54,13 +54,14 @@ const TaskForm = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle form submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
   };
 
+  // Generate enhanced description using AI
   const handleAIGenerate = async () => {
-    // Only proceed if there's text in the description field
     if (!formData.description?.trim()) {
       return;
     }
@@ -68,19 +69,12 @@ const TaskForm = ({
     setIsGenerating(true);
 
     try {
-      // Store the original prompt
       const userPrompt = formData.description;
-
-      // Update the textarea with a loading indicator
       setFormData((prev) => ({
         ...prev,
         description: "Generating enhanced description...",
       }));
-
-      // Generate the enhanced description from the user's input
       const generatedDescription = await generateTaskDescription(userPrompt);
-
-      // Update the form with the generated description
       setFormData((prev) => ({
         ...prev,
         description: generatedDescription,
@@ -88,7 +82,6 @@ const TaskForm = ({
     } catch (error) {
       console.error("Error generating description:", error);
 
-      // Restore the original text if there's an error
       setFormData((prev) => ({
         ...prev,
         description:

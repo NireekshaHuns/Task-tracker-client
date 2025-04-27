@@ -9,6 +9,7 @@ interface DecodedToken {
   iat: number;
 }
 
+// Decode JWT and return User object if token is valid
 export const decodeToken = (token: string): User | null => {
   try {
     const decoded = jwtDecode<DecodedToken>(token);
@@ -30,6 +31,7 @@ export const decodeToken = (token: string): User | null => {
   }
 };
 
+// Check if a JWT token is still valid
 export const isTokenValid = (token: string): boolean => {
   try {
     const decoded = jwtDecode<DecodedToken>(token);

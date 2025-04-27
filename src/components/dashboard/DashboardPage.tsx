@@ -1,9 +1,8 @@
-// src/components/dashboard/DashboardPage.tsx
 import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { taskService, TaskError } from "../../services/taskService";
 import { useAuthStore } from "../../store/authStore";
-import { useTaskStore } from "../../store/taskStore"; // Import the task store
+import { useTaskStore } from "../../store/taskStore";
 import { Task, TaskStatus, CreateTaskData } from "../../types/task";
 import ColumnContainer from "./ColumnContainer";
 import { Button } from "../ui/button";
@@ -163,7 +162,7 @@ const DashboardPage = () => {
 
       {/* Kanban board */}
       <ColumnContainer
-        tasks={storeTasks} // Use tasks from the store instead of directly from React Query
+        tasks={storeTasks}
         onTaskEdit={handleEditTask}
         onDrop={handleStatusChange}
         isLoading={isLoading}

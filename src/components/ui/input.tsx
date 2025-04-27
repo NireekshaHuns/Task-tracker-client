@@ -1,10 +1,7 @@
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
 
-/**
- * Reusable input component
- */
+// Input component for text fields
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input

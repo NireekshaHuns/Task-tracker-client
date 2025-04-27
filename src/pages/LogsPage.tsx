@@ -125,8 +125,6 @@ const LogsPage = () => {
   const handleRefresh = () => {
     setIsSimulatedLoading(true);
     refetch();
-
-    // Simulate loading for 3 seconds
     setTimeout(() => {
       setIsSimulatedLoading(false);
     }, 3000);
@@ -143,8 +141,6 @@ const LogsPage = () => {
 
     return () => clearTimeout(timer);
   }, []);
-
-  // Combined loading state (real data loading or simulated)
   const isLoading = isDataLoading || isSimulatedLoading;
 
   return (

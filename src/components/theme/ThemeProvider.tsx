@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect } from "react";
 import { useThemeStore } from "../../store/themeStore";
 
+// Supported theme types
 type Theme = "light" | "dark" | "system";
 
 interface ThemeProviderProps {
@@ -8,10 +9,7 @@ interface ThemeProviderProps {
   defaultTheme?: Theme;
 }
 
-/**
- * Context to provide theme state and setter across the app.
- * Defaults to "system" if not overridden.
- */
+// Create Theme Context
 const ThemeProviderContext = createContext<{
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -20,10 +18,7 @@ const ThemeProviderContext = createContext<{
   setTheme: () => null,
 });
 
-/**
- * ThemeProvider component that applies and manages the active theme mode.
- * It respects system preferences if theme is set to "system".
- */
+// Theme provider component
 export const ThemeProvider = ({
   children,
   defaultTheme = "system",
@@ -59,10 +54,7 @@ export const ThemeProvider = ({
   );
 };
 
-/**
- * Custom hook to consume the theme context.
- * Must be used within a ThemeProvider.
- */
+// Custom hook to access theme context
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext);
 

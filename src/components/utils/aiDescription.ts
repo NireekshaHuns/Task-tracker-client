@@ -6,6 +6,7 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
+// Generate a more detailed and concise task description from user input
 export const generateTaskDescription = async (
   userInput: string
 ): Promise<string> => {
@@ -59,6 +60,7 @@ export const generateTaskDescription = async (
   }
 };
 
+// Generate and update form with AI-generated description
 export const handleAIDescriptionGenerate = async (
   userInput: string,
   setFormData: React.Dispatch<React.SetStateAction<CreateTaskData>>
@@ -87,6 +89,7 @@ export const handleAIDescriptionGenerate = async (
   }
 };
 
+// Generate a short TLDR summary from the full task description
 export const generateTLDR = async (description: string): Promise<string> => {
   try {
     if (!description || description.trim().length < 30) {

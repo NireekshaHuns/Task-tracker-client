@@ -25,6 +25,7 @@ import { Home } from "lucide-react";
 import { toast } from "sonner";
 import usePageMeta from "../hooks/usePageMeta";
 
+//Login page for authenticating users.
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore();
@@ -41,6 +42,7 @@ const Login = () => {
     role: "submitter" as "submitter" | "approver",
   });
 
+  // Handle login API call
   const loginMutation = useMutation({
     mutationFn: authService.login,
     onSuccess: (data) => {
@@ -69,11 +71,13 @@ const Login = () => {
     },
   });
 
+  // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle role selection
   const handleRoleChange = (value: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -81,6 +85,7 @@ const Login = () => {
     }));
   };
 
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     loginMutation.mutate(formData);

@@ -1,4 +1,3 @@
-// src/hooks/useTaskAnalytics.ts
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { taskService } from "../services/taskService";
@@ -51,14 +50,14 @@ export type TaskAnalyticsData = {
 
 // Status color mapping
 const statusColors: Record<string, string> = {
-  pending: "#fbbf24", // yellow
-  approved: "#34d399", // green
-  done: "#3b82f6", // blue
-  rejected: "#ef4444", // red
+  pending: "#fbbf24",
+  approved: "#34d399",
+  done: "#3b82f6",
+  rejected: "#ef4444",
 };
 
+// Fetch and generate task analytics
 export const useTaskAnalytics = () => {
-  // Fetch all tasks
   const {
     data: tasks,
     isLoading,
@@ -74,8 +73,6 @@ export const useTaskAnalytics = () => {
 
   useEffect(() => {
     if (!tasks || tasks.length === 0) return;
-
-    // Task status counts
     const statusCounts: Record<string, number> = {
       pending: 0,
       approved: 0,
@@ -83,26 +80,19 @@ export const useTaskAnalytics = () => {
       rejected: 0,
     };
 
-    // Monthly data
     const monthlyData: Record<
       string,
       { pending: number; approved: number; done: number; rejected: number }
     > = {};
 
-    // Approval times (in hours)
     const approvalTimes: Record<string, number[]> = {};
-
-    // Submitter counts
     const submitterCounts: Record<string, number> = {};
 
-    // Process each task
     (tasks as TaskData[]).forEach((task: TaskData) => {
-      // Count by status
       if (statusCounts[task.status] !== undefined) {
         statusCounts[task.status]++;
       }
 
-      // Group by month
       const createdAt = new Date(task.createdAt);
       const monthKey = createdAt.toLocaleString("default", { month: "short" }); // "Jan", "Feb", etc.
 
@@ -115,11 +105,9 @@ export const useTaskAnalytics = () => {
         };
       }
 
-      // Use type assertion to ensure TypeScript knows task.status is a valid key
       const status = task.status as keyof (typeof monthlyData)[string];
       monthlyData[monthKey][status]++;
 
-      // Calculate approval times (if task is approved)
       if (task.status === "approved" && task.updatedAt) {
         const createdDate = new Date(task.createdAt).getTime();
         const approvedDate = new Date(task.updatedAt).getTime();
@@ -136,13 +124,11 @@ export const useTaskAnalytics = () => {
         approvalTimes[weekKey].push(hoursDiff);
       }
 
-      // Count submitters
       let submitterName = "Unknown";
 
       if (typeof task.createdBy === "object" && task.createdBy) {
         submitterName = task.createdBy.name || "Unknown";
       } else if (typeof task.createdBy === "string") {
-        // If you have a way to look up users by ID, you could use that here
         submitterName = "User " + task.createdBy.substring(0, 6);
       }
 
@@ -150,7 +136,6 @@ export const useTaskAnalytics = () => {
         (submitterCounts[submitterName] || 0) + 1;
     });
 
-    // Format the data for charts
     const tasksByStatus: TaskStatusCount[] = Object.entries(statusCounts).map(
       ([name, value]) => ({
         name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize
@@ -186,7 +171,6 @@ export const useTaskAnalytics = () => {
     setAnalyticsData({
       tasksByStatus,
       tasksByMonth: tasksByMonth.sort((a, b) => {
-        // Sort months chronologically
         const months = [
           "Jan",
           "Feb",
