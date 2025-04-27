@@ -20,15 +20,11 @@ interface TaskState {
 export const useTaskStore = create<TaskState>((set, get) => ({
   tasks: [],
   setTasks: (tasks: Task[]) => {
-    console.log("TaskStore: Setting tasks to:", tasks.length);
     set({ tasks });
   },
 
   removeTask: (taskId: string) => {
-    console.log("TaskStore: Removing task:", taskId);
     set((state) => {
-      const newTasks = state.tasks.filter((task) => task._id !== taskId);
-      console.log("TaskStore: Tasks after removal:", newTasks.length);
       return {
         tasks: state.tasks.filter((task) => task._id !== taskId),
         refreshCounter: state.refreshCounter + 1,

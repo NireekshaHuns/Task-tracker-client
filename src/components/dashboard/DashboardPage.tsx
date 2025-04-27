@@ -117,8 +117,6 @@ const DashboardPage = () => {
 
   // Handle status change via drag and drop
   const handleStatusChange = (taskId: string, newStatus: TaskStatus) => {
-    console.log(`Changing task ${taskId} status to: ${newStatus}`);
-
     updateTaskMutation.mutate({
       id: taskId,
       data: { status: newStatus },

@@ -26,7 +26,6 @@ export const decodeToken = (token: string): User | null => {
       role: decoded.role,
     };
   } catch (error) {
-    console.error("Failed to decode token:", error);
     return null;
   }
 };
