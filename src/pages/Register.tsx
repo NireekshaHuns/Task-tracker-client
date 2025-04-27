@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { authService } from "../services/authService";
-import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -41,17 +40,38 @@ const Register = () => {
     role: "submitter" as "submitter" | "approver",
   });
 
+  const [passwordChecks, setPasswordChecks] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    specialChar: false,
+  });
+
   const registerMutation = useMutation({
     mutationFn: authService.register,
     onSuccess: () => {
       toast.success("Registration successful! Please login");
       navigate("/login");
     },
+    onError: (error: any) => {
+      const errorMessage = error?.message || "Something went wrong";
+      toast.error(errorMessage);
+    },
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "password") {
+      setPasswordChecks({
+        length: value.length >= 8,
+        uppercase: /[A-Z]/.test(value),
+        lowercase: /[a-z]/.test(value),
+        number: /[0-9]/.test(value),
+        specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value),
+      });
+    }
   };
 
   const handleRoleChange = (value: string) => {
@@ -68,7 +88,6 @@ const Register = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-      {/* Home button */}
       <Button
         variant="ghost"
         size="icon"
@@ -96,15 +115,6 @@ const Register = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {registerMutation.isError && (
-                <Alert variant="destructive">
-                  <AlertDescription>
-                    {(registerMutation.error as Error).message ||
-                      "Registration failed"}
-                  </AlertDescription>
-                </Alert>
-              )}
-
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -139,6 +149,58 @@ const Register = () => {
                   value={formData.password}
                   onChange={handleChange}
                 />
+                {formData.password.length > 0 && (
+                  <div className="mt-2 space-y-1 text-sm animate-fade-slide">
+                    <p
+                      className={
+                        passwordChecks.length
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }
+                    >
+                      {passwordChecks.length ? "✓" : "✗"} At least 8 characters
+                    </p>
+                    <p
+                      className={
+                        passwordChecks.uppercase
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }
+                    >
+                      {passwordChecks.uppercase ? "✓" : "✗"} At least one
+                      uppercase letter
+                    </p>
+                    <p
+                      className={
+                        passwordChecks.lowercase
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }
+                    >
+                      {passwordChecks.lowercase ? "✓" : "✗"} At least one
+                      lowercase letter
+                    </p>
+                    <p
+                      className={
+                        passwordChecks.number
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }
+                    >
+                      {passwordChecks.number ? "✓" : "✗"} At least one number
+                    </p>
+                    <p
+                      className={
+                        passwordChecks.specialChar
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }
+                    >
+                      {passwordChecks.specialChar ? "✓" : "✗"} At least one
+                      special character
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
