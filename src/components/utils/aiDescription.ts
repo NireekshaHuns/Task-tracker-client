@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import { CreateTaskData } from "@/types/task";
 
 const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+  apiKey: atob(import.meta.env.VITE_OPENAI_API_KEY),
   dangerouslyAllowBrowser: true,
 });
 
