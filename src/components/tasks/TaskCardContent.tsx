@@ -1,8 +1,22 @@
-import React from "react";
-import { Clock, UserCircle2Icon, Edit, Trash } from "lucide-react";
+import React, { useState } from "react";
+import {
+  Clock,
+  UserCircle2Icon,
+  Edit,
+  Trash,
+  Loader2,
+  Sparkles,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from ".././ui/button";
 import { Task } from "../../types/task";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from ".././ui/tooltip";
+import { generateTLDR } from "../utils/aiDescription";
 
 interface TaskCardContentProps {
   task: Task;
@@ -16,7 +30,7 @@ interface TaskCardContentProps {
   canDelete: boolean;
   handleActionClick: (e: React.MouseEvent, action: () => void) => void;
   onEdit?: (task: Task) => void;
-  deleteMutation: any; // You might want to type this properly
+  deleteMutation: any;
   handleDragStart: (e: React.DragEvent) => void;
   handleDragEnd: () => void;
   handleCardClick: () => void;
@@ -40,6 +54,39 @@ const TaskCardContent: React.FC<TaskCardContentProps> = ({
   handleCardClick,
   ...props
 }) => {
+  const [tldrSummary, setTldrSummary] = useState<string | null>(null);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  const handleGenerateTldr = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (isDragging) return;
+
+    setTooltipOpen(!tooltipOpen);
+
+    if (
+      tldrSummary ||
+      isGeneratingSummary ||
+      !task.description ||
+      task.description.length < 30
+    ) {
+      return;
+    }
+
+    setIsGeneratingSummary(true);
+
+    try {
+      const summary = await generateTLDR(task.description);
+      setTldrSummary(summary);
+    } catch (error) {
+      console.error("Failed to generate TLDR:", error);
+      setTldrSummary("Unable to generate summary");
+    } finally {
+      setIsGeneratingSummary(false);
+    }
+  };
+
   return (
     <div
       className={`bg-white dark:bg-gray-800 p-4 rounded-md shadow mb-3 border-l-4 ${getStatusColor()} 
@@ -47,7 +94,10 @@ const TaskCardContent: React.FC<TaskCardContentProps> = ({
         ${isDragging ? "opacity-50" : "opacity-100"} ${className}`}
       draggable
       onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
+      onDragEnd={() => {
+        handleDragEnd();
+        setTooltipOpen(false);
+      }}
       onClick={handleCardClick}
       {...props}
     >
@@ -77,6 +127,45 @@ const TaskCardContent: React.FC<TaskCardContentProps> = ({
           </div>
 
           <div className="flex space-x-1">
+            {task.description && task.description.length >= 30 && (
+              <TooltipProvider>
+                <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 text-blue-500"
+                      onClick={handleGenerateTldr}
+                      disabled={isDragging}
+                    >
+                      <Sparkles className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="top"
+                    className="w-[300px] p-4 bg-[#251d1d] dark:bg-[#111827] text-white light:text-gray-800 border-none shadow-lg"
+                    sideOffset={5}
+                  >
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-lg dark:text-white light:text-gray-900">
+                        AI Summary ✨
+                      </h4>
+                      {isGeneratingSummary ? (
+                        <div className="flex items-center py-2">
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          <span className="text-sm">Generating summary...</span>
+                        </div>
+                      ) : (
+                        <p className="dark:text-white light:text-black text-sm leading-relaxed">
+                          {tldrSummary || "Summary not available"}
+                        </p>
+                      )}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+
             {canEdit && (
               <Button
                 size="icon"

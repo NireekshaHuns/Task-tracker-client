@@ -29,7 +29,6 @@ const TaskCard = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Truncate title and description for card view
   const maxTitleLength = 25;
   const maxDescriptionLength = 60;
 
@@ -74,7 +73,6 @@ const TaskCard = ({
     },
   });
 
-  // Handle drag events
   const handleDragStart = (e: React.DragEvent) => {
     e.stopPropagation();
 
@@ -99,7 +97,6 @@ const TaskCard = ({
     setIsDragging(false);
   };
 
-  // Get creator ID, handling different formats of createdBy data
   const getCreatedById = () => {
     if (typeof task.createdBy === "string") {
       return task.createdBy;
@@ -113,7 +110,6 @@ const TaskCard = ({
     return null;
   };
 
-  // Get creator name, handling different formats of createdBy data
   const getCreatedByName = () => {
     if (
       typeof task.createdBy === "object" &&
@@ -128,7 +124,6 @@ const TaskCard = ({
   const createdById = getCreatedById();
   const userId = user?._id;
 
-  // Fixed permission checks with string conversion
   const canEdit =
     user?.role === "submitter" &&
     String(createdById) === String(userId) &&
@@ -142,7 +137,6 @@ const TaskCard = ({
     }
   };
 
-  // Handle action button clicks
   const handleActionClick = (e: React.MouseEvent, action: () => void) => {
     e.stopPropagation();
     action();
@@ -168,16 +162,13 @@ const TaskCard = ({
         handleCardClick={handleCardClick}
         {...props}
       />
-
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <div>
             <h2 className="text-xl font-bold mb-2">{task.title}</h2>
-
-            <p className="text-gray-700 dark:text-gray-300 mb-6">
+            <p className="text-gray-700 dark:text-gray-300 mb-2">
               {task.description}
             </p>
-
             <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
               <p className="flex items-center">
                 <Clock className="h-4 w-4 mr-1" />
@@ -204,7 +195,6 @@ const TaskCard = ({
               )}
             </div>
           </div>
-
           <DialogFooter className="flex space-x-2 mt-6">
             {canEdit && (
               <Button
@@ -219,7 +209,6 @@ const TaskCard = ({
                 Edit
               </Button>
             )}
-
             {canDelete && (
               <Button
                 variant="destructive"
@@ -231,7 +220,6 @@ const TaskCard = ({
                 Delete
               </Button>
             )}
-
             <Button onClick={() => setDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
