@@ -10,6 +10,7 @@ const api = axios.create({
   },
 });
 
+// token to request headers and handle session expiration
 api.interceptors.request.use(
   (config) => {
     const token = useAuthStore.getState().token;

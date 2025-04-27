@@ -1,4 +1,3 @@
-// src/pages/Dashboard.tsx
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { taskService, TaskError } from "../services/taskService";
@@ -114,7 +113,6 @@ const Dashboard = () => {
 
   // Handle drag and drop
   const handleDrop = (taskId: string, newStatus: TaskStatus) => {
-    // Only approvers can change status (frontend check)
     if (user?.role !== "approver") {
       toast.error("Permission Denied", {
         description: "Only approvers can change task status",

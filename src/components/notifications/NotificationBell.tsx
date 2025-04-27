@@ -21,8 +21,8 @@ export const NotificationBell = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["notifications"],
     queryFn: notificationService.getNotifications,
-    refetchInterval: 30000, // Refetch every 30 seconds
-    enabled: user?.role === "submitter", // Only fetch for submitters
+    refetchInterval: 30000,
+    enabled: user?.role === "submitter",
   });
 
   // Safely extract notifications from the response

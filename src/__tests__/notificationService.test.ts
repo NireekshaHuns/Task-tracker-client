@@ -4,6 +4,7 @@ import {
 } from "../services/notificationService";
 import api from "../services/api";
 
+// Mock API methods
 jest.mock("../services/api", () => ({
   get: jest.fn(),
   delete: jest.fn(),
@@ -11,10 +12,12 @@ jest.mock("../services/api", () => ({
 
 describe("notificationService", () => {
   beforeEach(() => {
+    // Clear all mocks before each test
     jest.clearAllMocks();
   });
 
   describe("getNotifications", () => {
+    // Test getting notifications successfully
     it("should fetch notifications successfully", async () => {
       const mockResponse: NotificationResponse = {
         notifications: [
@@ -47,6 +50,7 @@ describe("notificationService", () => {
       expect(result.notifications[0].actionType).toBe("task_approved");
     });
 
+    // Test error when API fails with a message
     it("should throw error when API request fails", async () => {
       (api.get as jest.Mock).mockRejectedValue({
         response: { data: { message: "Failed to load notifications" } },
@@ -58,6 +62,7 @@ describe("notificationService", () => {
       );
     });
 
+    // Test error when API fails without a message
     it("should throw generic error when API fails without message", async () => {
       (api.get as jest.Mock).mockRejectedValue({});
 
@@ -68,6 +73,7 @@ describe("notificationService", () => {
   });
 
   describe("clearAllNotifications", () => {
+    // Test clearing all notifications
     it("should clear all notifications successfully", async () => {
       (api.delete as jest.Mock).mockResolvedValue({
         data: { message: "All notifications cleared" },
@@ -78,6 +84,7 @@ describe("notificationService", () => {
       expect(api.delete).toHaveBeenCalledWith("/notifications/clear-all");
     });
 
+    // Test error when clearing fails with a message
     it("should throw error when API request fails", async () => {
       (api.delete as jest.Mock).mockRejectedValue({
         response: { data: { message: "Permission denied" } },
@@ -91,6 +98,7 @@ describe("notificationService", () => {
       );
     });
 
+    // Test error when clearing fails without a message
     it("should throw generic error when API fails without message", async () => {
       (api.delete as jest.Mock).mockRejectedValue({});
 

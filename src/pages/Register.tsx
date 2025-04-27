@@ -24,6 +24,7 @@ import { Home } from "lucide-react";
 import { toast } from "sonner";
 import usePageMeta from "@/hooks/usePageMeta";
 
+// Register page for creating a new user account
 const Register = () => {
   const navigate = useNavigate();
 
@@ -48,6 +49,7 @@ const Register = () => {
     specialChar: false,
   });
 
+  // Handle registration API call
   const registerMutation = useMutation({
     mutationFn: authService.register,
     onSuccess: () => {
@@ -60,6 +62,7 @@ const Register = () => {
     },
   });
 
+  // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -74,6 +77,7 @@ const Register = () => {
     }
   };
 
+  // Handle role selection
   const handleRoleChange = (value: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -81,6 +85,7 @@ const Register = () => {
     }));
   };
 
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     registerMutation.mutate(formData);

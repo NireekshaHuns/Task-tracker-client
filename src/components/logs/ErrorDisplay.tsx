@@ -6,6 +6,7 @@ type ErrorDisplayProps = {
   onRetry: () => void;
 };
 
+// Error display component with retry button
 export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
   error,
   onRetry,

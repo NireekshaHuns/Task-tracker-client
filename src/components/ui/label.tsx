@@ -1,11 +1,8 @@
 import * as React from "react";
 import * as LabelPrimitive from "@radix-ui/react-label";
-
 import { cn } from "@/lib/utils";
 
-/**
- * Styled label component which handles layout and disabled states consistently.
- */
+// Label component for form fields
 function Label({
   className,
   ...props

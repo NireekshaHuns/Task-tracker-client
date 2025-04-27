@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Task, TaskStatus } from "../../types/task";
 import { TaskError } from "../../services/taskService";
-import { useTaskStore } from "../../store/taskStore"; // Import the task store
+import { useTaskStore } from "../../store/taskStore";
 import TaskColumn from "../TaskColumn";
 
 interface ColumnContainerProps {
@@ -20,7 +20,6 @@ const ColumnContainer = ({
   isError,
   error,
 }: ColumnContainerProps) => {
-  // Get the refresh counter from the store to force re-renders
   const { getTasksByStatus, refreshCounter } = useTaskStore();
 
   // Derive tasks for each column directly from the store

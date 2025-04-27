@@ -8,6 +8,7 @@ type PaginationData = {
   pages: number;
 };
 
+// Props for LogPagination component
 type LogPaginationProps = {
   pagination: PaginationData;
   currentPage: number;
@@ -15,6 +16,7 @@ type LogPaginationProps = {
   onNextPage: () => void;
 };
 
+// Pagination component for logs
 export const LogPagination: React.FC<LogPaginationProps> = ({
   pagination,
   currentPage,

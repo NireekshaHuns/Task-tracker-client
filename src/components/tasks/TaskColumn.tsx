@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Task, TaskStatus } from "../../types/task";
 import { useAuthStore } from "../../store/authStore";
 import { toast } from "sonner";
-import TaskCard from "./TaskCard"; // Added missing import
+import TaskCard from "./TaskCard";
 
 interface TaskColumnProps {
   title: string;
@@ -13,11 +13,12 @@ interface TaskColumnProps {
   onReorder: (taskId: string, status: TaskStatus, targetIndex: number) => void;
 }
 
+// Column component to display tasks by status
 const TaskColumn = ({
   title,
   status,
   tasks,
-  onTaskEdit, // Added missing prop
+  onTaskEdit,
   onDrop,
   onReorder,
 }: TaskColumnProps) => {
@@ -27,6 +28,7 @@ const TaskColumn = ({
     null
   );
 
+  // Handle when a dragged task is over the column
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
 
@@ -45,6 +47,7 @@ const TaskColumn = ({
     }
   };
 
+  // Handle when a dragged task leaves the column
   const handleDragLeave = (e: React.DragEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX;
@@ -56,6 +59,7 @@ const TaskColumn = ({
     }
   };
 
+  // Handle when a task is dropped into the column
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDropTarget(false);
@@ -92,6 +96,7 @@ const TaskColumn = ({
     }
   };
 
+  // Get column background color based on status
   const getColumnStyle = () => {
     switch (status) {
       case "pending":
@@ -107,6 +112,7 @@ const TaskColumn = ({
     }
   };
 
+  // Get empty state image based on status
   const getEmptyStateImage = () => {
     switch (status) {
       case "pending":

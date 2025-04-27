@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+// Layout props interface
 interface MainLayoutProps {
   children: ReactNode;
   title: string;
@@ -27,6 +28,7 @@ interface MainLayoutProps {
   backButtonText?: string;
 }
 
+// Main layout component
 export const MainLayout = ({
   children,
   title,
@@ -38,11 +40,13 @@ export const MainLayout = ({
   const { user, logout } = useAuthStore();
   const { theme, setTheme } = useTheme();
 
+  // Handle logout action
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
+  // Toggle light/dark theme
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
@@ -182,7 +186,6 @@ export const MainLayout = ({
                         <path d="M21 3v18" />
                         <rect x="5" y="9" width="4" height="12" />
                         <rect x="12" y="13" width="4" height="8" />
-                        {/* <rect x="17" y="5" width="34" height="16" /> */}
                       </svg>
                       Analytics
                     </DropdownMenuItem>

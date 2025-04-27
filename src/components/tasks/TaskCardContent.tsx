@@ -36,6 +36,7 @@ interface TaskCardContentProps {
   handleCardClick: () => void;
 }
 
+// Task card content displaying title, description, and actions
 const TaskCardContent: React.FC<TaskCardContentProps> = ({
   task,
   truncatedTitle,

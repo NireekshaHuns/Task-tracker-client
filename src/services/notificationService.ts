@@ -22,6 +22,7 @@ export interface NotificationResponse {
 }
 
 export const notificationService = {
+  // Fetch all notifications
   getNotifications: async (): Promise<NotificationResponse> => {
     try {
       const response = await api.get<NotificationResponse>("/notifications");
@@ -33,6 +34,7 @@ export const notificationService = {
     }
   },
 
+  // Clear all notifications
   clearAllNotifications: async (): Promise<void> => {
     try {
       await api.delete("/notifications/clear-all");

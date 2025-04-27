@@ -14,6 +14,7 @@ interface TaskColumnProps {
   onReorder: (taskId: string, status: TaskStatus, targetIndex: number) => void;
 }
 
+// Renders a task column with drag and drop support
 const TaskColumn = ({
   title,
   status,
@@ -48,6 +49,7 @@ const TaskColumn = ({
     }
   };
 
+  // Handle when dragging leaves a column
   const handleDragLeave = (e: React.DragEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX;
@@ -59,6 +61,7 @@ const TaskColumn = ({
     }
   };
 
+  // Handle dropping a task into a column
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDropTarget(false);
@@ -67,28 +70,20 @@ const TaskColumn = ({
     const taskId = e.dataTransfer.getData("taskId");
     const sourceStatus = e.dataTransfer.getData("taskStatus") as TaskStatus;
 
-    // Find the task element being dropped on
     const taskCard = (e.target as HTMLElement).closest(
       ".task-card"
     ) as HTMLElement;
 
-    // Case 1: If dropped directly on a task card
     if (taskCard) {
       const targetTaskId = taskCard.getAttribute("data-task-id");
-
-      // Find target index
       const targetIndex = tasks.findIndex((t) => t._id === targetTaskId);
 
-      // If source and target columns are the same, reorder
       if (sourceStatus === status && targetIndex !== -1) {
         onReorder(taskId, status, targetIndex);
         return;
       }
     }
-
-    // Case 2: If dropped at the end of the column or on different status column
     if (sourceStatus !== status) {
-      // Handle regular status change
       if (user?.role === "approver") {
         onDrop(taskId, status);
       } else {
@@ -97,7 +92,6 @@ const TaskColumn = ({
         });
       }
     } else {
-      // Dropped at the end of the same column
       onReorder(taskId, status, tasks.length);
     }
   };
@@ -118,6 +112,7 @@ const TaskColumn = ({
     }
   };
 
+  // Get empty state image based on column status
   const getEmptyStateImage = () => {
     switch (status) {
       case "pending":

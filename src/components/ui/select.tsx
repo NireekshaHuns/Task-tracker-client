@@ -1,33 +1,30 @@
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 
-/**
- * Root Select component
- */
+// Root Select component
 function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
   return <SelectPrimitive.Root data-slot="select" {...props} />;
 }
 
+// Group wrapper inside Select
 function SelectGroup({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Group>) {
   return <SelectPrimitive.Group data-slot="select-group" {...props} />;
 }
 
+// Selected value display
 function SelectValue({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Value>) {
   return <SelectPrimitive.Value data-slot="select-value" {...props} />;
 }
 
-/**
- * Trigger button to open the select dropdown
- */
+// Button to open the Select dropdown
 function SelectTrigger({
   className,
   size = "default",
@@ -54,6 +51,7 @@ function SelectTrigger({
   );
 }
 
+// Content area of the Select dropdown
 function SelectContent({
   className,
   children,
@@ -89,6 +87,7 @@ function SelectContent({
   );
 }
 
+// Label inside Select content
 function SelectLabel({
   className,
   ...props
@@ -102,6 +101,7 @@ function SelectLabel({
   );
 }
 
+// Single item inside the Select list
 function SelectItem({
   className,
   children,
@@ -126,6 +126,7 @@ function SelectItem({
   );
 }
 
+// Separator line between groups/items
 function SelectSeparator({
   className,
   ...props
@@ -139,9 +140,7 @@ function SelectSeparator({
   );
 }
 
-/**
- * Scroll button for dropdown (up)
- */
+// Scroll button at top of Select content
 function SelectScrollUpButton({
   className,
   ...props
@@ -160,9 +159,7 @@ function SelectScrollUpButton({
   );
 }
 
-/**
- * Scroll button for dropdown (down)
- */
+// Scroll button at bottom of Select content
 function SelectScrollDownButton({
   className,
   ...props

@@ -1,4 +1,4 @@
-import api from './api';
+import api from "./api";
 
 export interface Log {
   _id: string;
@@ -9,7 +9,7 @@ export interface Log {
   fromStatus?: string;
   toStatus: string;
   timestamp: string;
-  action: 'create' | 'update' | 'delete' | 'status_change';
+  action: "create" | "update" | "delete" | "status_change";
 }
 
 export interface Submitter {
@@ -41,33 +41,37 @@ export interface LogsResponse {
 }
 
 export const logService = {
+  // Fetch logs based on applied filters
   getLogs: async (filters: LogFilters = {}): Promise<LogsResponse> => {
     try {
-      // Convert filters to URL params
       const params = new URLSearchParams();
-      
+
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           params.append(key, value.toString());
         }
       });
-      
-      const response = await api.get<LogsResponse>(`/logs?${params.toString()}`);
+
+      const response = await api.get<LogsResponse>(
+        `/logs?${params.toString()}`
+      );
       return response.data;
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Failed to fetch logs';
+      const errorMessage =
+        error.response?.data?.message || "Failed to fetch logs";
       throw new Error(errorMessage);
     }
   },
-  
-  // New method to get submitters for the filter dropdown
+
+  // Fetch list of submitters
   getSubmitters: async (): Promise<Submitter[]> => {
     try {
-      const response = await api.get<Submitter[]>('/logs/submitters');
+      const response = await api.get<Submitter[]>("/logs/submitters");
       return response.data;
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Failed to fetch submitters';
+      const errorMessage =
+        error.response?.data?.message || "Failed to fetch submitters";
       throw new Error(errorMessage);
     }
-  }
+  },
 };

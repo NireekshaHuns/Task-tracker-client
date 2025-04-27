@@ -1,4 +1,3 @@
-// src/store/taskStore.ts
 import { create } from "zustand";
 import { Task, TaskStatus } from "../types/task";
 

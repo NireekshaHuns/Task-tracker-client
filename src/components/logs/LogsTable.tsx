@@ -4,6 +4,7 @@ import { Log } from "../../services/logService";
 import { ActionBadge } from "./ActionBadge";
 import { StatusBadge } from "./StatusBadge";
 
+// Format timestamp to readable format
 const formatDateTime = (dateString: string) => {
   const date = new Date(dateString);
   return format(date, "yyyy-MM-dd HH:mm:ss");
@@ -13,6 +14,7 @@ type LogsTableProps = {
   logs: Log[];
 };
 
+// Table component to display logs
 export const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-md shadow overflow-hidden transition-colors duration-300">

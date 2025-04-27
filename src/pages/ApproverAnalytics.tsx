@@ -22,7 +22,7 @@ const ApproverAnalyticsPage = () => {
   }, [user, navigate]);
 
   if (!user) {
-    return null; // Or a loading indicator
+    return null;
   }
 
   return (

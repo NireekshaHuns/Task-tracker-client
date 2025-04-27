@@ -17,6 +17,7 @@ interface TaskCardProps {
   className?: string;
 }
 
+// Task card component to display a task item
 const TaskCard = ({
   task,
   onEdit,
@@ -42,6 +43,7 @@ const TaskCard = ({
       ? `${task.description.substring(0, maxDescriptionLength)}...`
       : task.description;
 
+  // Get border color based on task status
   const getStatusColor = () => {
     switch (task.status) {
       case "pending":
@@ -57,6 +59,7 @@ const TaskCard = ({
     }
   };
 
+  // Mutation to delete task
   const deleteMutation = useMutation({
     mutationFn: () => taskService.deleteTask(task._id),
     onSuccess: (data) => {
@@ -73,6 +76,7 @@ const TaskCard = ({
     },
   });
 
+  // Handle drag start for moving task
   const handleDragStart = (e: React.DragEvent) => {
     e.stopPropagation();
 
@@ -97,6 +101,7 @@ const TaskCard = ({
     setIsDragging(false);
   };
 
+  // Get createdBy ID (string or object)
   const getCreatedById = () => {
     if (typeof task.createdBy === "string") {
       return task.createdBy;
@@ -110,6 +115,7 @@ const TaskCard = ({
     return null;
   };
 
+  // Get createdBy name (string or object)
   const getCreatedByName = () => {
     if (
       typeof task.createdBy === "object" &&
@@ -137,6 +143,7 @@ const TaskCard = ({
     }
   };
 
+  // Handle actions like Edit/Delete inside the card
   const handleActionClick = (e: React.MouseEvent, action: () => void) => {
     e.stopPropagation();
     action();

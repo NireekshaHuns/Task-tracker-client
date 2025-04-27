@@ -4,6 +4,7 @@ type ActionBadgeProps = {
   action: string;
 };
 
+// Get badge styles based on action type
 export const getActionBadge = (action: string) => {
   switch (action) {
     case "create":
@@ -19,6 +20,7 @@ export const getActionBadge = (action: string) => {
   }
 };
 
+// Badge component that shows action with styled label
 export const ActionBadge: React.FC<ActionBadgeProps> = ({ action }) => {
   return (
     <span

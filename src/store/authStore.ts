@@ -1,4 +1,3 @@
-// src/store/authStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { User } from "../types/user";
@@ -32,19 +31,18 @@ export const useAuthStore = create<AuthState>()(
       login: (token, user) =>
         set({
           token,
-          user: standardizeUser(user), // Standardize on login
+          user: standardizeUser(user),
           isAuthenticated: true,
         }),
       logout: () => set({ token: null, user: null, isAuthenticated: false }),
     }),
     {
       name: "auth-token",
-      partialize: (state) => ({ token: state.token }), // Only store token in localStorage
+      partialize: (state) => ({ token: state.token }),
       onRehydrateStorage: () => (state) => {
         if (state && state.token) {
           const decodedUser = decodeToken(state.token);
           if (decodedUser) {
-            // Update with standardized user info
             state.user = standardizeUser(decodedUser);
             state.isAuthenticated = true;
           } else {

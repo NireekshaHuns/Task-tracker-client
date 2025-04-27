@@ -4,6 +4,7 @@ type SkeletonLoaderProps = {
   rows?: number;
 };
 
+// Skeleton loader for table while data is loading
 export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({ rows = 5 }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-md shadow overflow-hidden transition-colors duration-300 animate-pulse">

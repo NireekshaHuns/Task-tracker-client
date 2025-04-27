@@ -4,6 +4,7 @@ type StatusBadgeProps = {
   status: string;
 };
 
+// Get color class based on status value
 export const getStatusColor = (status: string) => {
   switch (status) {
     case "pending":
