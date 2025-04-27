@@ -48,8 +48,6 @@ export const generateTaskDescription = async (
       "The AI could not generate a description. Please try again with more details."
     );
   } catch (error: any) {
-    console.error("Error generating task description:", error);
-
     if (error.message.includes("API key")) {
       return "AI description generation is currently unavailable. Please enter a description manually.";
     }
@@ -78,7 +76,6 @@ export const handleAIDescriptionGenerate = async (
       description: generatedDescription,
     }));
   } catch (error) {
-    console.error("Error in AI description generation:", error);
     setFormData((prev: CreateTaskData) => ({
       ...prev,
       description:
@@ -114,7 +111,6 @@ export const generateTLDR = async (description: string): Promise<string> => {
       response.choices[0]?.message?.content?.trim() || "Summary unavailable"
     );
   } catch (error) {
-    console.error("Error generating TLDR summary:", error);
     return "Unable to generate summary";
   }
 };

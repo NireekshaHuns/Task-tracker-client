@@ -80,8 +80,6 @@ const TaskForm = ({
         description: generatedDescription,
       }));
     } catch (error) {
-      console.error("Error generating description:", error);
-
       setFormData((prev) => ({
         ...prev,
         description:

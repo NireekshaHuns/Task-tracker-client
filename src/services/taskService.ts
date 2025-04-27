@@ -55,7 +55,6 @@ export const taskService = {
   // Update an existing task
   updateTask: async (id: string, data: Partial<Task>): Promise<Task> => {
     try {
-      console.log(`Calling API to update task with ID "${id}" and data:`, data);
       if (!id || id === "undefined") {
         throw new TaskError("Invalid task ID");
       }
@@ -63,8 +62,6 @@ export const taskService = {
       const response = await api.put<Task>(`/tasks/${id}`, data);
       return response.data;
     } catch (error: any) {
-      console.error("Error updating task:", error);
-
       const errorMessage =
         error.response?.data?.message || "Failed to update task";
       throw new TaskError(errorMessage);

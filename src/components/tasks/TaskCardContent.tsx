@@ -81,7 +81,6 @@ const TaskCardContent: React.FC<TaskCardContentProps> = ({
       const summary = await generateTLDR(task.description);
       setTldrSummary(summary);
     } catch (error) {
-      console.error("Failed to generate TLDR:", error);
       setTldrSummary("Unable to generate summary");
     } finally {
       setIsGeneratingSummary(false);

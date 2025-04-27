@@ -120,8 +120,6 @@ const Dashboard = () => {
       return;
     }
 
-    console.log(`Attempting to update task ${taskId} to status: ${newStatus}`);
-
     // Call the API to update the task status
     updateTaskMutation.mutate({
       id: taskId,
